@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "ObjLoader.h"
+
 // TODO: Reference additional headers your program requires here.
 
 //#include <gl/freeglut.h>
@@ -12,14 +14,21 @@
 #include <gl/glut.h>
 
 
-
 //bool pseudoFunction();
 
+class DrawControl 
+{
+	public :
 
-void Reshape(int width, int height);
+		static ObjLoader *objLoader;
 
-void Draw();
+		static void Reshape(int width, int height);
+		static void Draw();
 
+		static void triggerObjectRotationThenDisplay();
+		static void mouseCommands(int button, int state, int x, int y);
+
+};
 
 
 #endif

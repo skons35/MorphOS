@@ -31,8 +31,8 @@ Starting with usual Windows/Linux platforms, i will focus quickly on [MorphOS](h
 git clone https://github.com/skons35/MorphOS.git
 ```
 
-* For OpenGL / Glut tests project :
-* open command line, then go to the project folder **freeglut_proj**
+* For OpenGL / Glut tests project named : **simpleSceneTester**
+* open command line, then go to the *projects* folder
 ```
 cd projects
 ```
@@ -63,3 +63,13 @@ cmake-gui ..
  you should find a simpleSceneTester.sln_ file, that you can open with that IDE, and then compile the project.
 * launch / test the generated binary.
 
+At this time, **SimpleSceneTester** is a very simple OpenGL program, that aims to load and display
+ an OBJ file ( a default one, or a specific one if filename is provided as command line parameter)
+It can be launched using samples scripts in  **tests_scripts** folder.
+I also provide the sample data (OBJ files and texture in **data** folder).
+User may trigger object slow rotation by using mouse buttons (Left is starting rotation, Righ is inverting rotation,
+middle is stopping the auto-rotation.)
+
+*Note:*
+At this time, the presented mesh is in RED color (UVs and normals are loaded, but not yey used, 
+and file texture loading and/or colour management to be added soon)

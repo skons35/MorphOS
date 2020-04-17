@@ -2,6 +2,7 @@
 #include "commonFunctions.h"
 
 
+///*
 
 float vertPosTri_1[9] = { 0.0f,  0.0f, -5.0f, 		2.0f, 0.0f, -5.0f, 		0.0f, 2.0f, -5.0f };
 // fixed to be counter wise order two :
@@ -11,31 +12,35 @@ float vertPosTri_2[9] = { -3.0f, -3.0f, -8.0f,	   0.0f, -3.0f, -8.0f,      -3.0f
 float vertColTri_1[9] = { 0.0f,  0.0f, 1.0f,	 0.0f, 0.0f, 1.0f,	    0.0f,  0.0f, 1.0f };
 // Yellow :
 float vertColTri_2[9] = { 1.0f,  1.0f, 0.0f,	 1.0f, 1.0f, 0.0f,	    1.0f,  1.0f, 0.0f };
+//*/
 
 
-/*
-bool pseudoFunction()
-{
-std::cout << "	pseudoFunction called" << std::endl;
- return true; 
-}
-*/
 
-void Reshape(int width, int height)
+ObjLoader* DrawControl::objLoader = nullptr;
+
+static float rotAngle = 0.0f;
+static float rotDir = 1.0f; // +1 or -1
+
+void DrawControl::Reshape(int width, int height)
 {
 	glViewport(0, 0, width, height);
+	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	
 	gluPerspective(
 		45,
 		float(width) / float(height),
 		0.1,
 		100
-	); 	//Pour les explications, lire le tutorial sur OGL et win
-	glMatrixMode(GL_MODELVIEW); 	//Optionnel
+	); 	
+	
+	// set back the matrix to ModelView
+	glMatrixMode(GL_MODELVIEW); 	//Option
+	glLoadIdentity();              //
 }
 
-void Draw()
+void DrawControl::Draw()
 {
 	//VA : add DEPTH testing (for Z Buffer use and correct 3D Objects layout)
 	glEnable( GL_DEPTH_TEST); // masked object are not drawn
@@ -44,9 +49,59 @@ void Draw()
 
 	glMatrixMode(GL_MODELVIEW); 	//select MODELVIEW matrix
 	glLoadIdentity(); 	//set as Identity
+	
 	//gluLookAt(0, 0, -10, 0, 0, 0, 0, 1, 0);
 
+	//Test : adjust the location of object rendering  ( to control placement distance from camera) :
+	float xPos = 0.0f, yPos = 0.0f, zPos = -6.0f;
+	glPushMatrix();
+	glTranslatef(xPos, yPos, zPos);
 
+	// also introduce slow object(s) rotation (ON/OFF controlled per mouse button clicks)
+	static float xRot = 0.0f, yRot = 1.0f, zRot = 0.0f;
+	glRotatef(rotAngle, xRot, yRot, zRot);	
+
+	///*
+	if (DrawControl::objLoader != nullptr)
+	{
+		vector<obj::vec3> objVertices;
+		//
+		vector<uint8_t> objVertIndices;
+		// optional presence :
+		vector<obj::vec3> objNormals;  // not used yet
+		// optional presence :
+		vector<obj::uv> objUvs; // not used yet
+
+		if (! DrawControl::objLoader->getParsedObjData( objVertices, objVertIndices,
+														objNormals, objUvs)
+			)
+			cout << endl << "No data get from ObjLoader ....";
+		else 
+		{
+			//cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", and vert. indices : " << objVertIndices.size();;
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			//glEnableClientState(GL_COLOR_ARRAY);
+			// 
+			glVertexPointer(3, GL_FLOAT, 0, &objVertices[0]);
+			//glColorPointer(3, GL_FLOAT, 0, vertCols);
+
+			// tempo : assign ONE unique color for obj to be drawn :
+			glColor3f(1.0f, 0.0f, 0.0f); // RED
+			
+			//glDrawArrays(GL_TRIANGLES, 0, (GLsizei) 2 * 3); // objVertices.size()); // draw 1st triangle
+
+			// Using array of vertex indices
+			glDrawElements(GL_TRIANGLES, (GLsizei)objVertIndices.size(), GL_UNSIGNED_BYTE, &objVertIndices[0]);
+
+			//glDisableClientState(GL_COLOR_ARRAY);
+			glDisableClientState(GL_VERTEX_ARRAY);
+		}
+
+	}
+	//*/
+
+	/*
 	glEnableClientState( GL_VERTEX_ARRAY);
 	glEnableClientState( GL_COLOR_ARRAY);
 	// 1st triangle
@@ -59,7 +114,45 @@ void Draw()
 	glDrawArrays( GL_TRIANGLES, 0, 3); // draw 2nd triangle	
 	glDisableClientState( GL_COLOR_ARRAY);
 	glDisableClientState( GL_VERTEX_ARRAY);
+	*/
 
+	glPopMatrix();
 
 	glutSwapBuffers(); // swap the buffers using GLUT
+}
+
+void DrawControl::triggerObjectRotationThenDisplay()
+{
+
+	rotAngle += rotDir * 1.0f;
+
+	if (rotAngle >= 360.0f)
+		rotAngle -= 360.0f;
+	else if (rotAngle <= 0.0f)
+		rotAngle += 360.0f;
+
+	// trigger scene re-draw  (i.e. update);
+	glutPostRedisplay();
+}
+
+void DrawControl::mouseCommands(int mButton, int bStatus, int x, int y)
+{
+	//cout << endl << "Mouse button pressed  : " << mButton << ", status : " << bStatus << ", x/y : " << x << "/" << y;
+
+	// Let's say we do actions only when buttons are released (NOT pressed down):
+	if (bStatus != GLUT_UP)
+		return;
+
+	switch(mButton)
+	{
+		case GLUT_LEFT_BUTTON:
+			// triggers automatic rotation & scene update
+			glutIdleFunc(triggerObjectRotationThenDisplay); 
+			break;
+		case GLUT_RIGHT_BUTTON:
+			rotDir = - rotDir; // inverse rotation
+			break;
+		default: // middle button, ...
+			glutIdleFunc(nullptr); // stop auto rotation & update
+	}
 }
