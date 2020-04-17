@@ -3,7 +3,7 @@ Find in *projects* some applications more oriented to MorphOS portability and te
 One application at this time, to be completed.
 
 
-##Introduction
+## Introduction
 The aim of the first *simpleSceneTester* project is testing set up and rendering of simple 3D scene using **OpenGL** / **GLUT** combination, keeping compatibility for most platforms.
 
 Starting with usual Windows/Linux platforms, i will focus quickly on [MorphOS](https://fr.wikipedia.org/wiki/MorphOS) platform.
@@ -63,7 +63,7 @@ cmake-gui ..
  you should find a simpleSceneTester.sln_ file, that you can open with that IDE, and then compile the project.
 * launch / test the generated binary.
 
-At this time, **SimpleSceneTester** is a very simple OpenGL program, that aims to load and display
+**SimpleSceneTester** is a very simple OpenGL program, that aims to load and display
  an OBJ file ( a default one, or a specific one if filename is provided as command line parameter)
 It can be launched using samples scripts in  **tests_scripts** folder.
 I also provide the sample data (OBJ files and texture in **data** folder).
