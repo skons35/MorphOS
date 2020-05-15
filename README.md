@@ -63,13 +63,17 @@ cmake-gui ..
  you should find a simpleSceneTester.sln_ file, that you can open with that IDE, and then compile the project.
 * launch / test the generated binary.
 
-**SimpleSceneTester** is a very simple OpenGL program, that aims to load and display
+**SimpleSceneTester** is a very simple OpenGL program, that will aims to load and display
  an OBJ file ( a default one, or a specific one if filename is provided as command line parameter)
 It can be launched using samples scripts in  **tests_scripts** folder.
 I also provide the sample data (OBJ files and texture in **data** folder).
-User may trigger object slow rotation by using mouse buttons (Left is starting rotation, Righ is inverting rotation,
-middle is stopping the auto-rotation.)
+User may trigger object slow rotation by using mouse buttons (Left is starting rotation,
+Right is inverting rotation, middle is stopping the auto-rotation.)
 
-*Note:*
-At this time, the presented mesh is in RED color (UVs and normals are loaded, but not yey used, 
+*Note 1:*
+Current OBJ load code is commented. Same for BMP load.  What was added and keep active is only the load & parsing of MTL files).
+Integrating MTL and BMP file load into OBJ load will be done soon.
+
+*Note 2:*
+At this time, when OBJ load & display is active, the presented mesh is in RED color (UVs and normals are loaded, but not yet used, 
 and file texture loading and/or colour management to be added soon)
