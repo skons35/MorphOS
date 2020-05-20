@@ -72,8 +72,11 @@ void DrawControl::Draw()
 		// optional presence :
 		vector<obj::uv> objUvs; // not used yet
 
+		// optional presence :
+		vector<mtl::Material> objMats; // not used yet
+
 		if (! DrawControl::objLoader->getParsedObjData( objVertices, objVertIndices,
-														objNormals, objUvs)
+														objNormals, objUvs, objMats)
 			)
 			cout << endl << "No data get from ObjLoader ....";
 		else 

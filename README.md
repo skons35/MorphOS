@@ -70,10 +70,13 @@ I also provide the sample data (OBJ files and texture in **data** folder).
 User may trigger object slow rotation by using mouse buttons (Left is starting rotation,
 Right is inverting rotation, middle is stopping the auto-rotation.)
 
+Some dedicated BMP code load test added
+Some dedicated MTL code load test added
+
 *Note 1:*
-Current OBJ load code is commented. Same for BMP load.  What was added and keep active is only the load & parsing of MTL files).
-Integrating MTL and BMP file load into OBJ load will be done soon.
+Current part of code for graphical OBJ display is commented. 
+Currently working on adding MTL load&parze from OBJ load, same for BMP texture to come soon.
 
 *Note 2:*
-At this time, when OBJ load & display is active, the presented mesh is in RED color (UVs and normals are loaded, but not yet used, 
+At this time, when OBJ graphical display is active, the presented mesh is a CUBE in RED color (real vertices, UVs and normals are loaded, but not yet used, 
 and file texture loading and/or colour management to be added soon)

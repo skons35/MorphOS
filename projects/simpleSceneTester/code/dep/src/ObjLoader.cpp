@@ -27,6 +27,8 @@ bool ObjLoader::parseObjFile(string fileName)
     m_uvs.clear();
     m_objFaces.clear();
     m_mtllibs.clear();
+    // clear extra infos (if any) if using additional loaders (MTL, BMP)
+    m_materials.clear();
 
 
     // try open / access file :
@@ -54,8 +56,6 @@ bool ObjLoader::parseObjFile(string fileName)
 
         parseCompleted = parseCompleted && lineParsed; // one failure means global failure reported
     }      
-
-    // FINISH ME !!!
 
     // CLOSE
     objFile.close();
@@ -98,6 +98,10 @@ bool ObjLoader::parseLine(string & line)
         return parseVertexTextureDefinition(lineParams);
     else if (lineType == "f")
         return parseFaceTypeDefinition(lineParams);
+    else if (lineType == "mtllib")
+        return parseMaterialTemplateLibraryDefinition(lineParams);
+    else if (lineType == "usemtl")
+        return defineCurrentMaterial(lineParams);
     else // All other type simply ignored but displayed(  ....
         cout << endl << "(IGNORED) : Line Type : " << lineType << ", params : " << lineParams;
     return true;
@@ -202,7 +206,6 @@ bool ObjLoader::processFaceVertexInfos(string& infoStr, obj::Face& face)
         // tempo display :
         //cout << endl << "Parsed vIdx " << vIdx;
 
-        //face.vertexIndices.push_back(vIdx);
         face.vertexIndices.push_back(vIdx-1); // stored following 0 indexing        
 
         return true;
@@ -222,8 +225,6 @@ bool ObjLoader::processFaceVertexInfos(string& infoStr, obj::Face& face)
         // tempo display :
         //cout << endl << "Parsed vIdx, vtIdx " << vIdx << ", " << vtIdx;
 
-        //face.vertexIndices.push_back(vIdx);
-        //face.uvIndices.push_back(vtIdx);
         face.vertexIndices.push_back(vIdx-1);  // stored following 0 indexing        
         face.uvIndices.push_back(vtIdx-1);    //
         
@@ -243,8 +244,6 @@ bool ObjLoader::processFaceVertexInfos(string& infoStr, obj::Face& face)
         // tempo display :
         //cout << endl << "Parsed vIdx, vnIdx " << vIdx << ", " << vnIdx;
 
-        //face.vertexIndices.push_back(vIdx);
-        //face.normalIndices.push_back(vnIdx);
         face.vertexIndices.push_back(vIdx-1);    // stored following 0 indexing      
         face.normalIndices.push_back(vnIdx-1);  //
         
@@ -262,9 +261,6 @@ bool ObjLoader::processFaceVertexInfos(string& infoStr, obj::Face& face)
     // tempo display :
     //cout << endl << "Parsed vIdx, vtIdx, vnIdx " << vIdx << ", " << vtIdx << ", " << vnIdx;
 
-    //face.vertexIndices.push_back(vIdx);
-    //face.uvIndices.push_back(vtIdx);
-    //face.normalIndices.push_back(vnIdx);
     face.vertexIndices.push_back(vIdx-1);    // stored following 0 indexing  
     face.uvIndices.push_back(vtIdx-1);      //
     face.normalIndices.push_back(vnIdx-1); //
@@ -272,8 +268,83 @@ bool ObjLoader::processFaceVertexInfos(string& infoStr, obj::Face& face)
     return true;
 }
 
+
+bool ObjLoader::parseMaterialTemplateLibraryDefinition(string& params)
+{
+    stringstream ss(params);
+    string mtlFileName;
+    ss >> mtlFileName;
+
+    m_mtllibs.push_back(mtlFileName);
+
+    // we need materials infos right now, so immediately parse that file and return result
+    return extractMTLFileInfos(mtlFileName);
+}
+
+bool ObjLoader::extractMTLFileInfos(string mtlFileName)
+{
+    // Important : the MTL file may be located in same folder than OBJ
+    //             or relatively to it;
+    // we need to regenerate relevant file path before opening it
+    string mtlFilePathAndName;
+
+    size_t fnPos = this->m_objFileName.find_last_of("/\\");
+
+    if (std::string::npos == fnPos) // no folder path (full or partial) in obj filename
+        mtlFilePathAndName = mtlFileName; // assume MTL in same folder than OBJ
+    else
+        mtlFilePathAndName = this->m_objFileName.substr(0, fnPos + 1) + mtlFileName; // assume relative path from OBJ file
+
+    cout << endl << "Processing MTL file : " + mtlFilePathAndName;
+
+    // open & process MTL :
+    MtlLoader mtlLoader;
+    bool parseRes = mtlLoader.parseMtlFile(mtlFilePathAndName);
+
+    cout << endl << "- Parsing MTL File " << mtlFilePathAndName << ", result : " << (parseRes ? "SUCCESS" : "FAILED");
+
+    // accumulate extracted Material(s) data here
+    if (parseRes)
+    {
+        vector<mtl::Material> extMat;
+        mtlLoader.getParsedMtlData(extMat);
+        m_materials.insert(m_materials.end(), extMat.begin(), extMat.end());
+    }
+
+    return parseRes;
+}
+
+
+bool ObjLoader::defineCurrentMaterial(string& params) 
+{
+    // sanity check :
+    if (m_materials.empty())
+    {
+        cout << endl << "NO material currently defined, cannot assign one as current...";
+        return false;
+    }
+
+    stringstream ss(params);
+    string matName;
+    ss >> matName;
+
+    bool foundEntry = false;
+    for(int i=0; i<m_materials.size(); i++)
+    {
+        if (m_materials[i].name == matName)
+        {
+            m_currentMaterialIdx = i;
+            cout << endl << "Current Material set to : '" << matName << "' (idx:"<< m_currentMaterialIdx<<")";
+            foundEntry = true;
+            break;
+        }
+    }
+    
+    return foundEntry;
+}
+
 bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
-    vector<obj::vec3>& vertNormals, vector<obj::uv> vertUvs)
+    vector<obj::vec3>& vertNormals, vector<obj::uv> vertUvs, vector<mtl::Material>& materials)
 {
     // sanity check : some vertices were extracted ???
     if (m_vertices.empty())
@@ -283,6 +354,8 @@ bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& v
     vertIndices.clear();
     vertNormals.clear();
     vertUvs.clear();
+    // optional Material(s) info clear
+    materials.clear();
 
     // copy data into provided vectors
     vertices.insert(vertices.end(), m_vertices.begin(), m_vertices.end());
@@ -297,6 +370,9 @@ bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& v
         vertIndices.insert(vertIndices.end(), currFace.vertexIndices.begin(), currFace.vertexIndices.end());
     }
 
+    // provide optional Material(s) info defined
+    materials.insert(materials.end(), m_materials.begin(), m_materials.end());
+
     return true;
 }
 
@@ -307,6 +383,14 @@ void ObjLoader::printDetails(bool fullDetails)
     cout << endl << "Normals     : " << m_normals.size();
     cout << endl << "Vert. UVs   : " << m_uvs.size();
     cout << endl << "Obj. Face(s): " << m_objFaces.size();
+    // optional / extra infos using specifcs loader(s) :
+    if (!m_mtllibs.empty())
+    {
+        cout << endl << "(OPT) MTL file(s) defined : " << m_mtllibs.size();
+        cout << endl << "(OPT) Total Material(s) defined : " << m_materials.size();
+    }
+    else
+        cout << endl << "(OPT) no MTL file definition found.";
     
     if (fullDetails)
     {

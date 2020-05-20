@@ -1,10 +1,16 @@
 ﻿#ifndef OBJLOADER_H
 #define OBJLOADER_H
 
-//#include <iostream>
+
+#include "MtlLoader.h"
+#include "BmpLoader.h"
+
+#include <iostream> // cout
+
 #include<vector>
 
 #include<string>
+
 using namespace std;
 
 namespace obj 
@@ -54,17 +60,25 @@ class ObjLoader
         //  of :  vertices, normals (if relevant), UV textures (if relevant)
         vector<obj::Face> m_objFaces;
 
-        // useful when object is textured :
-        vector<string> m_mtllibs; // possibly multiple material file(s) material provided
+        // optional MTL file(s) name(s) specified  (useful when object is using materials and/or is textured)
+        // !!!! possibly multiple material file(s) material provided
+        vector<string> m_mtllibs; 
 
+        // optional material(s) data, requiring additional parsers/loaders :
+        // MTL -> MtlLoader, plus texture data loader if any (currently only BMP type managed)
+        vector<mtl::Material> m_materials;  
 
+        unsigned int m_currentMaterialIdx = 0;
 
     public:
         ObjLoader();
-        bool parseObjFile(string fileName);
-        //bool getParsedObjData(vector<obj::vec3>& vertices, vector<obj::vec3>& vertNormals, vector<obj::uv> vertUvs);
+        
+        bool parseObjFile(string fileName);       
         bool getParsedObjData( vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
-                               vector<obj::vec3>& vertNormals, vector<obj::uv> vertUvs);
+                               vector<obj::vec3>& vertNormals,     // possibly empty
+                               vector<obj::uv> vertUvs,           // possibly empty
+                               vector<mtl::Material>& materials  // possibly empty
+                            );
         void printDetails(bool fullDetails = false);
 
     private:
@@ -75,6 +89,10 @@ class ObjLoader
         bool parseFaceTypeDefinition(string& params);
         bool processFaceVertexInfos(string& infoStr, obj::Face& face);
 
+        bool ObjLoader::parseMaterialTemplateLibraryDefinition(string& params);
+        bool ObjLoader::extractMTLFileInfos(string mtlFileName);
+
+        bool ObjLoader::defineCurrentMaterial(string& lineParams);
 };
 
 

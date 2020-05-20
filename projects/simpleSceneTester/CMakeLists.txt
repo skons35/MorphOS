@@ -13,9 +13,16 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/simpleSceneTester/code/dep/inc)
 FILE(GLOB sources ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/dep/src/*.cpp)
 ADD_LIBRARY(sceneTestsLib ${sources})
 
+# main prog : OBJ loader; including MTL and BMP loading if present
 ADD_EXECUTABLE(sceneTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/sceneTester.cpp)
-
 target_link_libraries(sceneTester sceneTestsLib  ${GLUT_LIBRARIES})
+
+# Provides also some extra tests : dedicated code for file load of MTL and BMP
+ADD_EXECUTABLE(mtlLoadTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/mtlLoadTester.cpp)
+target_link_libraries(mtlLoadTester sceneTestsLib) #  ${GLUT_LIBRARIES})
+
+ADD_EXECUTABLE(bmpLoadTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/bmpLoadTester.cpp)
+target_link_libraries(bmpLoadTester sceneTestsLib) #  ${GLUT_LIBRARIES})
 
 # install part related :
 
