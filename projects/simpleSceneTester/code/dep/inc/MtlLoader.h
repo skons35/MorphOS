@@ -6,6 +6,7 @@
 #include<string>
 using namespace std;
 
+#include <RawImage.h>
 
 namespace mtl 
 {
@@ -31,7 +32,10 @@ namespace mtl
             float Ni = 1.0; //optical density
             float  d = 1.0; //transparency , in range [0.; 1.] (no transp.) 
             int illum;
-            string map_Kd; // companion texture file name, if relevant
+            string map_Kd; // a texture file name, if provided
+            // above decoded texture data  :
+            //     CAUTION : only 24/32 BMP format decoding at this point 
+            struct RawImage rawImage; 
     };
 
     enum MaterialElement
@@ -54,7 +58,9 @@ class MtlLoader
 
     public:
         MtlLoader();
-        bool parseMtlFile(string fileName);               
+        bool parseMtlFile(string fileName);  
+
+        bool extractTextureImageData(mtl::Material& currMat, string textureImageFileName);
 
         bool getParsedMtlData(vector<mtl::Material>& materials);
 

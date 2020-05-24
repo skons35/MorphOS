@@ -1,25 +1,31 @@
 #ifndef _BMPLOADER_H_
 #define _BMPLOADER_H_
 
+
+#include<RawImage.h>
+
+/*
 #include<vector>
 
 #include<string>
 using namespace std;
 
-struct BmpImage
+
+struct RawImage
 {
     vector<unsigned char> data;
     int width;
     int height;
     int bytesPerPixel;
 };
+*/
 
 class BmpLoader
 {
 private:
     string m_bmpFileName = "";
     
-    struct BmpImage m_BmpImage;
+    struct RawImage m_RawImage;
 
     bool m_imageParsed = false;
 
@@ -33,8 +39,9 @@ public:
 
     bool isImageParsed() { return m_imageParsed; };
 
-private:
-    
+    //struct RawImage* getRawImage();  
+
+    bool copyRawImageTo(struct RawImage& destRawImage);
 
 };
 

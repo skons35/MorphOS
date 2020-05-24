@@ -3,7 +3,7 @@
 
 
 #include "MtlLoader.h"
-#include "BmpLoader.h"
+//#include "BmpLoader.h"
 
 #include <iostream> // cout
 

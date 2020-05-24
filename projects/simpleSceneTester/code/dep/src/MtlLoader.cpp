@@ -1,5 +1,7 @@
 #include "MtlLoader.h"
 
+#include "BmpLoader.h"
+
 #include<iostream> // cout
 #include<fstream> // ifstream
 #include<sstream> // stringstrem
@@ -178,6 +180,9 @@ bool MtlLoader::parseMaterialElementDefinition(string& params, mtl::MaterialElem
             ss >> currMat.map_Kd;
             // keep trace of texture use
             m_isUsingTextures = true;
+            // TRY immediate DECODING of the texture img (data, size, ...) : 
+            // Caution : BMP only supported at this time
+            return extractTextureImageData(currMat, currMat.map_Kd);
             break;
         default:
             cout << "Unexpected param to process : " << me << " (please check param provided for process)";
@@ -185,6 +190,63 @@ bool MtlLoader::parseMaterialElementDefinition(string& params, mtl::MaterialElem
     }
 
     return true;
+}
+
+// extract texture image and assign it to current Material, along relevant map_Kd name
+bool MtlLoader::extractTextureImageData(mtl::Material& currMat, string textureImageFileName)
+{
+    // Important : the BMP/PNG/... texture file may be located in same folder than refering MTL
+    //             or relatively to it;
+    // we need to regenerate relevant file path before opening it
+    string texFilePathAndName;
+
+    size_t fnPos = this->m_mtlFileName.find_last_of("/\\");
+
+    if (std::string::npos == fnPos) // no folder path (full or partial) in obj filename
+        texFilePathAndName = textureImageFileName; // assume MTL in same folder than OBJ
+    else
+        texFilePathAndName = this->m_mtlFileName.substr(0, fnPos + 1) + textureImageFileName; // assume relative path from OBJ file
+
+    cout << endl << "Processing TEXTURE file : " + texFilePathAndName;
+
+    // TO BE CONTINUED
+
+    // Open & process Texture file using adequate reader :
+
+    // check BMP extension ? 
+    size_t bmpPos = textureImageFileName.find_last_of(".bmp");
+    if (std::string::npos != bmpPos)
+    {
+        BmpLoader bmpLoader;
+        bool parseRes = bmpLoader.parseBmpFile(texFilePathAndName);
+        cout << endl << "(BMP Texture file Parsing : " << (parseRes ? "SUCCESS" : "FAILED") << ")";
+
+        //bmpLoader.printDetails();
+
+        bool copyDone = false;
+        if (parseRes)
+        {
+            copyDone = bmpLoader.copyRawImageTo(currMat.rawImage);
+
+            // tempo debug : 
+            /*
+            if (copyDone)
+            {
+                cout << endl << "Read back _copied_ Material Texture infos : ";
+                cout << endl << "Image Width x height :  " << currMat.rawImage.width << " x " << currMat.rawImage.height;
+                cout << endl << "Image Data byte(s): " << currMat.rawImage.data.size();
+                cout << endl << "Image data bytes per pixel :  " << currMat.rawImage.bytesPerPixel;
+            }
+            */
+        }
+
+        return parseRes;
+    }
+    
+    // TO DO : add other cases plus related loader there : (png, ...) 
+
+    cout << endl << "Unmanaged texture file format....";
+    return false;    
 }
 
 bool MtlLoader::getParsedMtlData(vector<mtl::Material>& materials)
@@ -213,18 +275,26 @@ void MtlLoader::printDetails(bool fullDetails)
 
         for (int i = 0; i < m_materials.size(); i++)
         {
+            mtl::Material& mat = m_materials[i];
             cout << endl << "material #" << i << " : ";
-            cout << endl << "  - Name : " << m_materials[i].name;
-            cout << endl << "  - Ns   : " << m_materials[i].Ns;
-            cout << endl << "  - Ka   : " << m_materials[i].Ka.r << " ," << m_materials[i].Ka.g << " ," << m_materials[i].Ka.b ;
-            cout << endl << "  - Kd   : " << m_materials[i].Kd.r << " ," << m_materials[i].Kd.g << " ," << m_materials[i].Kd.b;
-            cout << endl << "  - Ks   : " << m_materials[i].Ks.r << " ," << m_materials[i].Ks.g << " ," << m_materials[i].Ks.b;
-            cout << endl << "  - Ke   : " << m_materials[i].Ke.r << " ," << m_materials[i].Ke.g << " ," << m_materials[i].Ke.b;
-            cout << endl << "  - Ni   : " << m_materials[i].Ni;
-            cout << endl << "  - d    : " << m_materials[i].d;
-            cout << endl << "  - illum  : " << m_materials[i].illum;
+            cout << endl << "  - Name : " << mat.name;
+            cout << endl << "  - Ns   : " << mat.Ns;
+            cout << endl << "  - Ka   : " << mat.Ka.r << " ," << mat.Ka.g << " ," << mat.Ka.b ;
+            cout << endl << "  - Kd   : " << mat.Kd.r << " ," << mat.Kd.g << " ," << mat.Kd.b;
+            cout << endl << "  - Ks   : " << mat.Ks.r << " ," << mat.Ks.g << " ," << mat.Ks.b;
+            cout << endl << "  - Ke   : " << mat.Ke.r << " ," << mat.Ke.g << " ," << mat.Ke.b;
+            cout << endl << "  - Ni   : " << mat.Ni;
+            cout << endl << "  - d    : " << mat.d;
+            cout << endl << "  - illum  : " << mat.illum;
             if (m_isUsingTextures)
-                cout << endl << "  - map_Kd : " << m_materials[i].map_Kd;            
+            {
+                cout << endl << "  - map_Kd : " << mat.map_Kd;
+                // decoded texture infos :
+                cout << endl << "    > Decoded Material Texture infos : ";
+                cout << endl << "      .Image Width x height :  " << mat.rawImage.width << " x " << mat.rawImage.height;
+                cout << endl << "      .Image Data byte(s): " << mat.rawImage.data.size();
+                cout << endl << "      .Image data bytes per pixel :  " << mat.rawImage.bytesPerPixel;                
+            }
         }
     }
 

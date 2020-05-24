@@ -42,10 +42,10 @@ bool BmpLoader::parseBmpFile(string fileName)
     }
 
     // ok (re)init internal struct BmpImage
-    m_BmpImage.data.clear();    
-    m_BmpImage.width = 0;
-    m_BmpImage.height = 0;
-    m_BmpImage.bytesPerPixel = 0;
+    m_RawImage.data.clear();    
+    m_RawImage.width = 0;
+    m_RawImage.height = 0;
+    m_RawImage.bytesPerPixel = 0;
 
     // parse header infos :
 
@@ -90,14 +90,14 @@ bool BmpLoader::parseBmpFile(string fileName)
     // alloc & copy data only if format ok
     if (0 != bytesPerPixel)
     {
-        m_BmpImage.data.resize(dataLength);
+        m_RawImage.data.resize(dataLength);
         //cout << endl << "resized storage vector to  : " << m_BmpImage.data.size();
 
         // relocate just at the specified data start pos :
         bmpFile.seekg(dataPos, bmpFile.beg);
                 
         // read all the img data :
-        if ( !bmpFile.read((char *)&m_BmpImage.data[0], dataLength) )
+        if ( !bmpFile.read((char *)&m_RawImage.data[0], dataLength) )
         {
             cout << endl << "Failed to read all image data from : " << m_bmpFileName;
             bmpFile.close();
@@ -107,9 +107,9 @@ bool BmpLoader::parseBmpFile(string fileName)
         //cout << endl << "Copied Image data Length (bytes) : " << dataLength;
 
         // finalize kept infos to be returned
-        m_BmpImage.width = width;
-        m_BmpImage.height = height;
-        m_BmpImage.bytesPerPixel = bytesPerPixel;
+        m_RawImage.width = width;
+        m_RawImage.height = height;
+        m_RawImage.bytesPerPixel = bytesPerPixel;
     }
 
     // CLOSE
@@ -125,10 +125,43 @@ void BmpLoader::printDetails()
     if(!m_imageParsed)
         cout << endl << "CAUTION : Image parsing NOT DONE, or FAILed ! Information may be incomplete...";
     cout << endl << "Image FileName    : " << m_bmpFileName;
-    cout << endl << "Image Data Length, in byte(s)  : " << m_BmpImage.data.size();
-    cout << endl << "Image bytes per pixel : " << m_BmpImage.bytesPerPixel;
-    cout << endl << "Image Width : " << m_BmpImage.width;
-    cout << endl << "Image Height : " << m_BmpImage.height;
+    cout << endl << "Image Data Length, in byte(s)  : " << m_RawImage.data.size();
+    cout << endl << "Image bytes per pixel : " << m_RawImage.bytesPerPixel;
+    cout << endl << "Image Width : " << m_RawImage.width;
+    cout << endl << "Image Height : " << m_RawImage.height;
 }
 
+/*
+struct RawImage* BmpLoader::getRawImage() 
+{
+    // sanity check
+    if(!m_imageParsed)
+     {
+        cout << endl << "No Image parsed yet. NULL info returned.";
+        return nullptr;
+     }
+
+    return &m_RawImage;
+}
+*/
+
+bool BmpLoader::copyRawImageTo(struct RawImage& destRawImage)
+{
+    // sanity check
+    if (!m_imageParsed)
+    {
+        cout << endl << "No Image parsed yet. No data / info to copy.";
+        return false;
+    }
+
+    destRawImage.data.clear();
+    // copy data bytes :
+    destRawImage.data.insert(destRawImage.data.end(), m_RawImage.data.begin(), m_RawImage.data.end());
+    // and image infos (widht, height, bpp) :
+    destRawImage.width = m_RawImage.width;
+    destRawImage.height = m_RawImage.height;
+    destRawImage.bytesPerPixel = m_RawImage.bytesPerPixel;
+
+    return true;
+}
 

@@ -75,7 +75,7 @@ Some dedicated MTL code load test added
 
 *Note 1:*
 Current part of code for graphical OBJ display is commented. 
-Currently working on adding MTL load&parze from OBJ load, same for BMP texture to come soon.
+Currently added MTL load & parze from OBJ load, plus from MTL parsing the parsing of BMP texture if any.
 
 *Note 2:*
 At this time, when OBJ graphical display is active, the presented mesh is a CUBE in RED color (real vertices, UVs and normals are loaded, but not yet used, 

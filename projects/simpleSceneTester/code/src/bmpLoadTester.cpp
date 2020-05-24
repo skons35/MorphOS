@@ -39,13 +39,25 @@ int main(int argc, char *argv[])
 
 	cout << endl << "Will parse Image File :" << fullPathFileName;
 
+	
 	BmpLoader bmpLoader;
 	bool parseRes = bmpLoader.parseBmpFile(fullPathFileName);
 	cout << endl << "- BMP File Parsing : " << (parseRes ? "SUCCESS" : "FAILED");
 	
 	bmpLoader.printDetails();
 
-
+	if (parseRes)
+	{
+		struct RawImage rawImageCopy; // empty RawImage; receiving data copy below
+				
+		if(bmpLoader.copyRawImageTo(rawImageCopy))
+		 {
+			cout << endl << "----Read back _copied_ image infos : ----";			
+			cout << endl << "Image Width x height :  " << rawImageCopy.width << " x " << rawImageCopy.height;
+			cout << endl << "Image Data byte(s): " << rawImageCopy.data.size();
+			cout << endl << "Image data bytes per pixel :  " << rawImageCopy.bytesPerPixel;
+		 }
+	}
 
 	return 0;
 }
