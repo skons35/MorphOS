@@ -89,10 +89,10 @@ class ObjLoader
         bool parseFaceTypeDefinition(string& params);
         bool processFaceVertexInfos(string& infoStr, obj::Face& face);
 
-        bool ObjLoader::parseMaterialTemplateLibraryDefinition(string& params);
-        bool ObjLoader::extractMTLFileInfos(string mtlFileName);
+        bool parseMaterialTemplateLibraryDefinition(string& params);
+        bool extractMTLFileInfos(string mtlFileName);
 
-        bool ObjLoader::defineCurrentMaterial(string& lineParams);
+        bool defineCurrentMaterial(string& lineParams);
 };
 
 
