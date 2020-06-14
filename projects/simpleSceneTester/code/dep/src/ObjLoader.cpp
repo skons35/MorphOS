@@ -344,7 +344,7 @@ bool ObjLoader::defineCurrentMaterial(string& params)
 }
 
 bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
-    vector<obj::vec3>& vertNormals, vector<obj::uv> vertUvs, vector<mtl::Material>& materials)
+    vector<obj::vec3>& vertNormals, vector<obj::uv>& vertUvs, vector<mtl::Material>& materials)
 {
     // sanity check : some vertices were extracted ???
     if (m_vertices.empty())

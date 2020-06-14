@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	objLoader.printDetails(false); // true for full details option
 
 	// 2) use OpenGL to display the OBJ loaded
-/*
+///*
 
 	// Assign to Class controlling the draw & display functions our prepared ObjLoader
 	DrawControl::objLoader = &objLoader;
@@ -95,64 +95,7 @@ int main(int argc, char *argv[])
 	// removing assigned ObjLoader.
 	DrawControl::objLoader = nullptr;
  
- */
+ //*/
 
 	return 0;
 }
-
-
-
-/*
-	// 1) test load MTL file
-	cout << "testing load MTL file..." << endl;
-	string fullPathFileName;
-
-	if (argc > 1)
-	{
-		cout << endl << "Using cmd line given param...";
-		fullPathFileName = argv[1];
-	}
-	else
-	{
-		cout << endl << "NO File provide on cmd line. Will use a default one...";
-		std::string dataPath = DEF_DATA_PATH;
-		std::string mtlFileName = "VA_textured_faces_with_ananas.mtl";
-		fullPathFileName = dataPath + mtlFileName;
-	}
-
-	cout << endl << "Will parse MTL File :" << fullPathFileName;
-
-	MtlLoader mtlLoader;
-	bool parseRes = mtlLoader.parseMtlFile(fullPathFileName);
-	cout << endl << "- MTL File Parsing : " << (parseRes ? "SUCCESS" : "FAILED");
-
-	mtlLoader.printDetails(false); // true for full details option
-	*/
-
-
-	/*
-		// 1) test load BMP file
-		cout << "testing load BMP file..." << endl;
-		string fullPathFileName;
-
-		if (argc > 1)
-		{
-			cout << endl << "Using cmd line given param...";
-			fullPathFileName = argv[1];
-		}
-		else
-		{
-			cout << endl << "NO File provide on cmd line. Will use a default one...";
-			std::string dataPath = DEF_DATA_PATH;
-			std::string bmpFileName = "skons_rd_256x512_RGB_24bpp.bmp";
-			fullPathFileName = dataPath + bmpFileName;
-		}
-
-		cout << endl << "Will parse Image File :" << fullPathFileName;
-
-		BmpLoader bmpLoader;
-		bool parseRes = bmpLoader.parseBmpFile(fullPathFileName);
-		cout << endl << "- BMP File Parsing : " << (parseRes ? "SUCCESS" : "FAILED");
-
-		bmpLoader.printDetails();
-	*/

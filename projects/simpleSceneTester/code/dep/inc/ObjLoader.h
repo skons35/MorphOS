@@ -76,7 +76,7 @@ class ObjLoader
         bool parseObjFile(string fileName);       
         bool getParsedObjData( vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
                                vector<obj::vec3>& vertNormals,     // possibly empty
-                               vector<obj::uv> vertUvs,           // possibly empty
+                               vector<obj::uv>& vertUvs,           // possibly empty
                                vector<mtl::Material>& materials  // possibly empty
                             );
         void printDetails(bool fullDetails = false);

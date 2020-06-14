@@ -78,5 +78,7 @@ Current part of code for graphical OBJ display is commented.
 Currently added MTL load & parze from OBJ load, plus from MTL parsing the parsing of BMP texture if any.
 
 *Note 2:*
-At this time, when OBJ graphical display is active, the presented mesh is a CUBE in RED color (real vertices, UVs and normals are loaded, but not yet used, 
-and file texture loading and/or colour management to be added soon)
+At this time, when OBJ graphical display is active, only the case of simple OBJ file (no materials, no textures) is displaying
+resulting RED colored model, as I need to review the parsing of OBJ/MTL files to managed vertices set per material being defined.
+(I should have done that from the start, sorry !!). 
+So first fixing that, then i'll come backon colour management, to be added soon)

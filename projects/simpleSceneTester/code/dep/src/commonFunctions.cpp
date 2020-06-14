@@ -81,6 +81,68 @@ void DrawControl::Draw()
 			cout << endl << "No data get from ObjLoader ....";
 		else 
 		{
+			// 3 cases : 
+			//   (A)  : just obj file => no provided (matrial) color(s), just vertices (+ normals possibly)
+			//   (B)  : obj + mtl file => provided material(s) color, 
+			//                            with vertices (+ normals possibly)
+			//                            but without UVs information
+			//   (C)  : obj + MTL(s) + text. file(s) ==> provided material as texture(s) file, with UVs,
+			//                                           with vertices (+ normals possibly)
+
+			// tempo debug :
+			//cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", vert. indices : " << objVertIndices.size()
+			//	<< ", UVs : " << objUvs.size() << ", material(s) : " << objMats.size();
+
+			// process cases amongst 3
+			if (objMats.empty())  
+			 {	
+				// CASE A
+
+				cout << endl << "CASE A : no material(s), use a common default RED COLOR for all vertices...";
+				cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", and vert. indices : " << objVertIndices.size();
+				glEnableClientState(GL_VERTEX_ARRAY);					
+				glVertexPointer(3, GL_FLOAT, 0, &objVertices[0]);					
+				// tempo : assign ONE unique color for obj to be drawn :
+				glColor3f(1.0f, 0.0f, 0.0f); // RED
+				// Using array of vertex indices
+				glDrawElements(GL_TRIANGLES, (GLsizei)objVertIndices.size(), GL_UNSIGNED_BYTE, &objVertIndices[0]);
+				glDisableClientState(GL_VERTEX_ARRAY);
+			 }
+			else if(objUvs.empty()) 
+			{
+				// CASE B 
+
+				cout << endl << "CASE B : material(s) color(s) defined, no texture(s) ...";
+				cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", vert. indices : " << objVertIndices.size()
+					<< ", material(s) : " << objMats.size();
+				
+				//
+				// TO BE FINISHED : 				
+				//
+
+				// VA : lot of rewrite needed, at both the OBJ & MTL reading part :
+				//      as we need to maintain a set of vertices, per related material
+				cout << endl << "WRITE ME !!!!"; 
+			}
+			else
+			{
+				// CASE C 
+
+				cout << endl << "CASE C : material(s) color(s) defined, using texture(s) ...";
+				cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", vert. indices : " << objVertIndices.size()
+					<< ", UVs : " << objUvs.size() << ", material(s) : " << objMats.size();
+				
+				//
+				// TO BE FINISHED : 				
+				//
+
+				// VA : lot of rewrite needed, at both the OBJ & MTL reading part :
+				//      as we need to maintain a set of vertices, per related material
+				cout << endl << "WRITE ME !!!!";
+			}
+			
+
+			/*
 			//cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", and vert. indices : " << objVertIndices.size();;
 
 			glEnableClientState(GL_VERTEX_ARRAY);
@@ -99,6 +161,7 @@ void DrawControl::Draw()
 
 			//glDisableClientState(GL_COLOR_ARRAY);
 			glDisableClientState(GL_VERTEX_ARRAY);
+			*/
 		}
 
 	}
