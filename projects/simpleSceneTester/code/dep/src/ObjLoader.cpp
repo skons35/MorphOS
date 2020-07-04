@@ -148,6 +148,12 @@ bool ObjLoader::parseFaceTypeDefinition(string& params)
 
     obj::Face face;
 
+    // a face should keep trace of current active material if any (for use it at drawing step)
+    face.materialIdx = m_currentMaterialIdx;
+
+    //cout << endl << "current face will be assigned with mat idx : " << face.materialIdx;
+
+
     // DO THE face details extraction , BUT the format may vary :
     // (ALSO  : possibly more than 3 vertices, if a polygon face instead of simple triangle)
     //
@@ -320,7 +326,9 @@ bool ObjLoader::defineCurrentMaterial(string& params)
     // sanity check :
     if (m_materials.empty())
     {
-        cout << endl << "NO material currently defined, cannot assign one as current...";
+        cout << endl << "NO material(s) currently defined, cannot assign one as current...";
+        // explicit re-set current active material idx to none (i.e. special value)    
+        m_currentMaterialIdx = obj::NO_MATERIAL_IDX;
         return false;
     }
 
@@ -414,8 +422,12 @@ void ObjLoader::printDetails(bool fullDetails)
         for (int i = 0; i < m_objFaces.size(); i++)
         {
             cout << endl << "Face.#" << i << " : " << endl << "  -vertex count = " << m_objFaces[i].vertexIndices.size()
-                << endl << "  -UVs     count = " << m_objFaces[i].uvIndices.size()
-                << endl << "  -Normals count = " << m_objFaces[i].normalIndices.size();
+                     << endl << "  -UVs     count = " << m_objFaces[i].uvIndices.size()
+                     << endl << "  -Normals count = " << m_objFaces[i].normalIndices.size();
+            if (m_objFaces[i].materialIdx == obj::NO_MATERIAL_IDX)
+                cout << endl << "  -NO Material assigned";
+            else
+                cout << endl << "  -Material idx  = " << m_objFaces[i].materialIdx << " ,  named: " << m_materials[m_objFaces[i].materialIdx].name;              
         }
 
         cout << endl << "---------------------------";

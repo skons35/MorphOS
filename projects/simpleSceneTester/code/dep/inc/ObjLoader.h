@@ -35,6 +35,7 @@ namespace obj
     struct Face 
     {
          public:
+            int materialIdx; // possibly no material used (special value will be assigned then)
             // Caution : OBJ convention use indexes starting at 1 
             // but here we store them starting back from 0 !!
             vector<int> vertexIndices;
@@ -42,6 +43,8 @@ namespace obj
             vector<int> uvIndices;
             Face() { } // no init, vectors empty at creation
     };
+
+    const int NO_MATERIAL_IDX = -1;
 }
 
 // See : https://en.wikipedia.org/wiki/Wavefront_.obj_file
@@ -68,7 +71,8 @@ class ObjLoader
         // MTL -> MtlLoader, plus texture data loader if any (currently only BMP type managed)
         vector<mtl::Material> m_materials;  
 
-        unsigned int m_currentMaterialIdx = 0;
+        //unsigned int m_currentMaterialIdx = 0;
+        int m_currentMaterialIdx = obj::NO_MATERIAL_IDX; // means No active Material set
 
     public:
         ObjLoader();
