@@ -12,7 +12,7 @@
 
 
 ObjLoader::ObjLoader()
-{
+{   
 }
 
 bool ObjLoader::parseObjFile(string fileName)
@@ -21,11 +21,13 @@ bool ObjLoader::parseObjFile(string fileName)
 
     m_objFileName = fileName;
 
+    m_currentMaterialIdx = 0;
+
     // reset storage vectors
     m_vertices.clear();
     m_normals.clear();
     m_uvs.clear();
-    m_objFaces.clear();
+    m_objMatFaces.clear();
     m_mtllibs.clear();
     // clear extra infos (if any) if using additional loaders (MTL, BMP)
     m_materials.clear();
@@ -149,10 +151,21 @@ bool ObjLoader::parseFaceTypeDefinition(string& params)
     obj::Face face;
 
     // a face should keep trace of current active material if any (for use it at drawing step)
-    face.materialIdx = m_currentMaterialIdx;
+    //face.materialIdx = m_currentMaterialIdx;
 
-    //cout << endl << "current face will be assigned with mat idx : " << face.materialIdx;
+    // first access case  :
+    //    detect if we need to resize the per_material vector of faces
+    //    this is the case if no material is provided at all (it will be idx 0, and default one will be set before drawing faces)
+    if (m_objMatFaces.size() < (size_t)m_currentMaterialIdx+1)
+    {
+        m_objMatFaces.resize( (size_t)m_currentMaterialIdx + 1);
+        cout << endl << " m_objMatFaces resized to : "<< m_objMatFaces.size() <<" ; for hosting face(s) related to new mat. idx : " << m_currentMaterialIdx;
+        
+    }
 
+    vector<obj::Face> & currMatObjFaces = m_objMatFaces[m_currentMaterialIdx];
+
+    //cout << endl << "current face's vector contains : " << currMatObjFaces.size() << " face(s), " << " using active materil idx : " << m_currentMaterialIdx;
 
     // DO THE face details extraction , BUT the format may vary :
     // (ALSO  : possibly more than 3 vertices, if a polygon face instead of simple triangle)
@@ -179,10 +192,7 @@ bool ObjLoader::parseFaceTypeDefinition(string& params)
       } 
     while (iss);
     
-    m_objFaces.push_back(face);
-    
-    // tempo debug :
-    //cout << endl << "stored face(s) now :" << m_objFaces.size();
+    currMatObjFaces.push_back(face);
 
     return faceProcessed;
 }
@@ -326,9 +336,9 @@ bool ObjLoader::defineCurrentMaterial(string& params)
     // sanity check :
     if (m_materials.empty())
     {
-        cout << endl << "NO material(s) currently defined, cannot assign one as current...";
-        // explicit re-set current active material idx to none (i.e. special value)    
-        m_currentMaterialIdx = obj::NO_MATERIAL_IDX;
+        cout << endl << "NO material(s) currently defined, cannot assign one as current...";      
+        // explicit re-set current active material to idx 0  (will need to define a default one later for display)
+        m_currentMaterialIdx = 0;
         return false;
     }
 
@@ -351,9 +361,14 @@ bool ObjLoader::defineCurrentMaterial(string& params)
     return foundEntry;
 }
 
+// REWRITE ME : (to fit a 'per material' faces drawing with opengl and vertices indices array)
+/*  
 bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
     vector<obj::vec3>& vertNormals, vector<obj::uv>& vertUvs, vector<mtl::Material>& materials)
 {
+
+    cout << endl << "!!!! REWRITE THIS METHOD TO FOLLOW per material faces, ... vectorization !! ";
+
     // sanity check : some vertices were extracted ???
     if (m_vertices.empty())
         return false;
@@ -383,6 +398,8 @@ bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& v
 
     return true;
 }
+*/
+
 
 void ObjLoader::printDetails(bool fullDetails)
 {
@@ -390,7 +407,7 @@ void ObjLoader::printDetails(bool fullDetails)
     cout << endl << "Vertices    : " << m_vertices.size();
     cout << endl << "Normals     : " << m_normals.size();
     cout << endl << "Vert. UVs   : " << m_uvs.size();
-    cout << endl << "Obj. Face(s): " << m_objFaces.size();
+    cout << endl << "Obj. per Material Faces vector(s): " << m_objMatFaces.size();
     // optional / extra infos using specifcs loader(s) :
     if (!m_mtllibs.empty())
     {
@@ -418,18 +435,20 @@ void ObjLoader::printDetails(bool fullDetails)
         {
             cout << endl << "UV.#" << i << " : " << m_uvs[i].u << ", " << m_uvs[i].v ;
         }
+                
+        for (int m = 0; m < m_objMatFaces.size(); m++)
+        {            
+            vector<obj::Face>& matFaces = m_objMatFaces[m];
 
-        for (int i = 0; i < m_objFaces.size(); i++)
-        {
-            cout << endl << "Face.#" << i << " : " << endl << "  -vertex count = " << m_objFaces[i].vertexIndices.size()
-                     << endl << "  -UVs     count = " << m_objFaces[i].uvIndices.size()
-                     << endl << "  -Normals count = " << m_objFaces[i].normalIndices.size();
-            if (m_objFaces[i].materialIdx == obj::NO_MATERIAL_IDX)
-                cout << endl << "  -NO Material assigned";
-            else
-                cout << endl << "  -Material idx  = " << m_objFaces[i].materialIdx << " ,  named: " << m_materials[m_objFaces[i].materialIdx].name;              
+            cout << endl << ">Face(s) using Material #" << m << ":";
+            for (int i = 0; i < matFaces.size(); i++)
+            {
+                cout << endl << "   -Face.#" << i << " : " 
+                    << endl << "      --vertex count = " << matFaces[i].vertexIndices.size()
+                    << endl << "      --UVs     count = " << matFaces[i].uvIndices.size()
+                    << endl << "      --Normals count = " << matFaces[i].normalIndices.size();
+            }
         }
-
         cout << endl << "---------------------------";
     }
 }

@@ -35,7 +35,10 @@ namespace obj
     struct Face 
     {
          public:
-            int materialIdx; // possibly no material used (special value will be assigned then)
+            
+             // NO MORE : now materials will contains using FACES (a default one will be created if needed)
+             //int materialIdx; // possibly no material used (special value will be assigned then)
+
             // Caution : OBJ convention use indexes starting at 1 
             // but here we store them starting back from 0 !!
             vector<int> vertexIndices;
@@ -44,7 +47,7 @@ namespace obj
             Face() { } // no init, vectors empty at creation
     };
 
-    const int NO_MATERIAL_IDX = -1;
+    //const int NO_MATERIAL_IDX = -1; // no more using this approach
 }
 
 // See : https://en.wikipedia.org/wiki/Wavefront_.obj_file
@@ -59,10 +62,7 @@ class ObjLoader
         vector<obj::vec3> m_normals;
         // optional presence :
         vector<obj::uv> m_uvs;
-        // below faces are manipulating indexes (starting at 1),
-        //  of :  vertices, normals (if relevant), UV textures (if relevant)
-        vector<obj::Face> m_objFaces;
-
+        
         // optional MTL file(s) name(s) specified  (useful when object is using materials and/or is textured)
         // !!!! possibly multiple material file(s) material provided
         vector<string> m_mtllibs; 
@@ -71,18 +71,29 @@ class ObjLoader
         // MTL -> MtlLoader, plus texture data loader if any (currently only BMP type managed)
         vector<mtl::Material> m_materials;  
 
-        //unsigned int m_currentMaterialIdx = 0;
-        int m_currentMaterialIdx = obj::NO_MATERIAL_IDX; // means No active Material set
+        // below faces are manipulating indexes (starting at 1),
+        //  of :  vertices, normals (if relevant), UV textures (if relevant)
+        //vector<obj::Face> m_objFaces; 
+        vector<vector<obj::Face>> m_objMatFaces; // now a vector of faces is created per material (with matching idx)
+
+        unsigned int m_currentMaterialIdx = 0;
+        //int m_currentMaterialIdx = obj::NO_MATERIAL_IDX; // means No active Material set
 
     public:
         ObjLoader();
         
-        bool parseObjFile(string fileName);       
+        bool parseObjFile(string fileName);   
+
+        // REWRITE ME : (to fit per material faces draw using openGL )
+        /*
         bool getParsedObjData( vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
                                vector<obj::vec3>& vertNormals,     // possibly empty
                                vector<obj::uv>& vertUvs,           // possibly empty
                                vector<mtl::Material>& materials  // possibly empty
                             );
+        */
+
+
         void printDetails(bool fullDetails = false);
 
     private:
