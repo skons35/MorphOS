@@ -361,7 +361,7 @@ bool ObjLoader::defineCurrentMaterial(string& params)
     return foundEntry;
 }
 
-// REWRITE ME : (to fit a 'per material' faces drawing with opengl and vertices indices array)
+// REWRITE ME : (to fit a 'per material' faces drawing with opengl and vertices indices array)!
 /*  
 bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
     vector<obj::vec3>& vertNormals, vector<obj::uv>& vertUvs, vector<mtl::Material>& materials)
@@ -399,6 +399,53 @@ bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& v
     return true;
 }
 */
+
+bool ObjLoader::getParsedObjData( vector<obj::vec3>& vertices,         // v/vn/vt INDICES will be managed on a per-face basis (in Face struct)
+                                  vector<obj::vec3>& vertNormals,     //
+                                  vector<obj::uv>& vertUvs,          //
+                                  vector<mtl::Material>& materials,
+                                  vector<vector<obj::Face>>& faces // added to allow access to each -per material- set of faces 
+    )
+{ 
+    // sanity check 1 : at least some vertices should be defined after loading data
+    if (m_vertices.empty())
+        return false;
+
+    // sanity check 2 : at least one set of faces should be present after loading data
+    if (m_objMatFaces.empty())
+        return false;
+
+    // WARNING check : at least one default material should be present after loading data
+    //if (m_materials.empty())
+    //    return false;
+
+    vertices.clear();
+    vertNormals.clear();
+    vertUvs.clear();
+
+    materials.clear();
+    faces.clear();
+
+    // copy data into provided vectors
+    vertices.insert(vertices.end(), m_vertices.begin(), m_vertices.end());
+    vertNormals.insert(vertNormals.end(), m_normals.begin(), m_normals.end());
+    vertUvs.insert(vertUvs.end(), m_uvs.begin(), m_uvs.end());
+
+    // provide optional Material(s) info defined
+    materials.insert(materials.end(), m_materials.begin(), m_materials.end());
+
+    // copy the faces infos : 
+    for (int i = 0; i < m_objMatFaces.size(); i++)
+     {
+        vector<obj::Face>& matFaces = m_objMatFaces[i];
+        // explicit vector duplication
+        vector<obj::Face> clonedMatFaces;
+        clonedMatFaces.insert(clonedMatFaces.end(), matFaces.begin(), matFaces.end());
+        faces.push_back(clonedMatFaces); 
+     }
+
+    return true;
+}
 
 
 void ObjLoader::printDetails(bool fullDetails)

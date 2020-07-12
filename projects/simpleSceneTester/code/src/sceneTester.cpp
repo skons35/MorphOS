@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	objLoader.printDetails(false); // true for full details option
 
 	// 2) use OpenGL to display the OBJ loaded
-/*
+///*
 
 	// Assign to Class controlling the draw & display functions our prepared ObjLoader
 	DrawControl::objLoader = &objLoader;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 	// removing assigned ObjLoader.
 	DrawControl::objLoader = nullptr;
  
- */
+ //*/
 
 	return 0;
 }

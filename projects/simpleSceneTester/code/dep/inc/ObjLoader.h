@@ -92,6 +92,12 @@ class ObjLoader
                                vector<mtl::Material>& materials  // possibly empty
                             );
         */
+        bool getParsedObjData( vector<obj::vec3>& vertices,         // indices will be managed on a per-face basis (in Face struct)
+                               vector<obj::vec3>& vertNormals,     //
+                               vector<obj::uv>& vertUvs,          //
+                               vector<mtl::Material>& materials, // at least contains one material (using default values)
+                               vector<vector<obj::Face>>& faces // added to allow access to each -per material- set of faces 
+                            );
 
 
         void printDetails(bool fullDetails = false);

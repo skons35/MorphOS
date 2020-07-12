@@ -64,24 +64,25 @@ void DrawControl::Draw()
 	///*
 	if (DrawControl::objLoader != nullptr)
 	{
-		vector<obj::vec3> objVertices;
-		//
-		vector<uint8_t> objVertIndices;
+		vector<obj::vec3> objVertices;		
 		// optional presence :
-		vector<obj::vec3> objNormals;  // not used yet
+		vector<obj::vec3> objNormals;  
 		// optional presence :
-		vector<obj::uv> objUvs; // not used yet
+		vector<obj::uv> objUvs; 
+				
+		vector<mtl::Material> objMats; // at least will contain one default material
+		vector<vector<obj::Face>> objMatFaces; // at least will contain one set of loaded faces
 
-		// optional presence :
-		vector<mtl::Material> objMats; // not used yet
-
-		if (false // REWRITE ME !!!  //! DrawControl::objLoader->getParsedObjData( objVertices, objVertIndices, objNormals, objUvs, objMats)
+		//if (!DrawControl::objLoader->getParsedObjData( objVertices, objVertIndices, objNormals, objUvs, objMats)
+		if (!DrawControl::objLoader->getParsedObjData( objVertices, objNormals, objUvs,
+														objMats, objMatFaces)
 			)
-			cout << endl << "No data get from ObjLoader ....";
+			cout << endl << "No valid data get from ObjLoader ....";
 		else 
 		{
 			// 3 cases : 
-			//   (A)  : just obj file => no provided (matrial) color(s), just vertices (+ normals possibly)
+			//   (A)  : just obj file => no provided (material) color(s), just vertices (+ normals possibly) and faces
+			//                           THEN a default material MUST be created & used BELOW
 			//   (B)  : obj + mtl file => provided material(s) color, 
 			//                            with vertices (+ normals possibly)
 			//                            but without UVs information
@@ -92,6 +93,11 @@ void DrawControl::Draw()
 			//cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", vert. indices : " << objVertIndices.size()
 			//	<< ", UVs : " << objUvs.size() << ", material(s) : " << objMats.size();
 
+			cout << endl << "DRAW() : Provided OBJ vertices : " << objVertices.size()
+						 << ", normals : " << objNormals.size() << ", UVs : " << objUvs.size()
+						 << ", material(s) : " << objMats.size() << ", set(s) of face(s) : " << objMatFaces.size();
+
+/*
 			// process cases amongst 3
 			if (objMats.empty())  
 			 {	
@@ -140,6 +146,7 @@ void DrawControl::Draw()
 				cout << endl << "WRITE ME !!!!";
 			}
 			
+*/
 
 			/*
 			//cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", and vert. indices : " << objVertIndices.size();;
@@ -162,7 +169,6 @@ void DrawControl::Draw()
 			glDisableClientState(GL_VERTEX_ARRAY);
 			*/
 		}
-
 	}
 	//*/
 
