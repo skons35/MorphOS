@@ -16,7 +16,8 @@ namespace mtl
             float r;
             float g;
             float b;
-            rgb() { r = g = b = 0.0f; }
+            //rgb() { r = g = b = 0.0f; }
+            rgb() { r = g = b = 1.0f; }
     };
 
     // generic definition, some parameters are optional

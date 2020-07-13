@@ -74,11 +74,5 @@ Some dedicated BMP code load test added
 Some dedicated MTL code load test added
 
 *Note 1:*
-Current part of code for graphical OBJ display is commented. 
-Currently added MTL load & parze from OBJ load, plus from MTL parsing the parsing of BMP texture if any.
-
-*Note 2:*
-At this time, when OBJ graphical display is active, only the case of simple OBJ file (no materials, no textures) is displaying
-resulting RED colored model, as I need to review the parsing of OBJ/MTL files to managed vertices set per material being defined.
-(I should have done that from the start, sorry !!). 
-So first fixing that, then i'll come backon colour management, to be added soon)
+Only uncompressed BMP texture file(s) are managed at this time (more to be added later).
+Currently the texture(s) are loaded but not displayed. This is the next step (to come).

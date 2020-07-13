@@ -58,7 +58,8 @@ void DrawControl::Draw()
 	glTranslatef(xPos, yPos, zPos);
 
 	// also introduce slow object(s) rotation (ON/OFF controlled per mouse button clicks)
-	static float xRot = 0.0f, yRot = 1.0f, zRot = 0.0f;
+	//static float xRot = 0.0f, yRot = 1.0f, zRot = 0.0f;
+	static float xRot = 0.2f, yRot = 1.0f, zRot = 0.2f;
 	glRotatef(rotAngle, xRot, yRot, zRot);	
 
 	///*
@@ -97,20 +98,53 @@ void DrawControl::Draw()
 						 << ", normals : " << objNormals.size() << ", UVs : " << objUvs.size()
 						 << ", material(s) : " << objMats.size() << ", set(s) of face(s) : " << objMatFaces.size();
 
-/*
+///*
 			// process cases amongst 3
 			if (objMats.empty())  
 			 {	
 				// CASE A
 
 				cout << endl << "CASE A : no material(s), use a common default RED COLOR for all vertices...";
-				cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", and vert. indices : " << objVertIndices.size();
+				
 				glEnableClientState(GL_VERTEX_ARRAY);					
 				glVertexPointer(3, GL_FLOAT, 0, &objVertices[0]);					
-				// tempo : assign ONE unique color for obj to be drawn :
+				// tempo : simply assign ONE unique color for obj to be drawn :
 				glColor3f(1.0f, 0.0f, 0.0f); // RED
-				// Using array of vertex indices
-				glDrawElements(GL_TRIANGLES, (GLsizei)objVertIndices.size(), GL_UNSIGNED_BYTE, &objVertIndices[0]);
+
+				// we could assume to find only ONE set of face(s), all using that DEFAULT "material"
+				// but just in case parse as if in gneral case (multiple mat, so multiple faces' set
+				cout << endl << "--Set of faces to draw :" << objMatFaces.size();
+				for (int i = 0; i < objMatFaces.size(); i++)
+				{
+					vector<obj::Face>& matFaces = objMatFaces[i];
+					cout << endl << "-set #" << i << " ,contains " << matFaces.size() << " face(s) to draw";
+					for (int f = 0; f < matFaces.size(); f++)
+					{
+						obj::Face & face = matFaces[f];		
+
+						cout << endl << "vertex indice(s) to load :" << face.vertexIndices.size() << " >>> ";
+						for (int vi = 0; vi < face.vertexIndices.size(); vi++)
+							cout << face.vertexIndices[vi] << " ";
+
+						if (3 == face.vertexIndices.size())
+						{
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_TRIANGLES, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+						else if (4 == face.vertexIndices.size())
+						{
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_QUADS, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+						else
+						{
+							cout << endl << "Drawing face as a polygon, as described per : " << face.vertexIndices.size() << " vertex indexes";
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_POLYGON, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+				    }
+				}
+
 				glDisableClientState(GL_VERTEX_ARRAY);
 			 }
 			else if(objUvs.empty()) 
@@ -118,35 +152,109 @@ void DrawControl::Draw()
 				// CASE B 
 
 				cout << endl << "CASE B : material(s) color(s) defined, no texture(s) ...";
-				cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", vert. indices : " << objVertIndices.size()
-					<< ", material(s) : " << objMats.size();
-				
-				//
-				// TO BE FINISHED : 				
-				//
 
-				// VA : lot of rewrite needed, at both the OBJ & MTL reading part :
-				//      as we need to maintain a set of vertices, per related material
-				cout << endl << "WRITE ME !!!!"; 
+				glEnableClientState(GL_VERTEX_ARRAY);
+				
+				glVertexPointer(3, GL_FLOAT, 0, &objVertices[0]); // the COMPLETE list of vertices is used for each draxing iteration below
+
+				for(int m=0; m< objMats.size(); m++) 
+				{
+					mtl::rgb& matKd = objMats[m].Kd;
+					// first assign color using material one (simple approach : we use Kd)
+					glColor3f(matKd.r, matKd.g, matKd.b);
+
+					// per construction, for each defined material; a matching vector of faces exist; 
+					// ... so render it with related material
+					vector<obj::Face>& matFaces = objMatFaces[m]; // remember : set of faces with index m is related to material with index m
+					cout << endl << "-set #" << m << " ,contains " << matFaces.size() << " face(s) to draw";
+					for (int f = 0; f < matFaces.size(); f++)
+					{
+						obj::Face& face = matFaces[f];
+
+						cout << endl << "vertex indice(s) to load :" << face.vertexIndices.size() << " >>> ";
+						for (int vi = 0; vi < face.vertexIndices.size(); vi++)
+							cout << face.vertexIndices[vi] << " ";
+
+						if (3 == face.vertexIndices.size())
+						{
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_TRIANGLES, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+						else if (4 == face.vertexIndices.size())
+						{
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_QUADS, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+						else
+						{
+							cout << endl << "Drawing face as a polygon, as described per : " << face.vertexIndices.size() << " vertex indexes";
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_POLYGON, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+					}
+
+				}
+				
+				glDisableClientState(GL_VERTEX_ARRAY);
 			}
-			else
+			else // some UVs are provided
 			{
 				// CASE C 
 
 				cout << endl << "CASE C : material(s) color(s) defined, using texture(s) ...";
-				cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", vert. indices : " << objVertIndices.size()
-					<< ", UVs : " << objUvs.size() << ", material(s) : " << objMats.size();
 				
-				//
-				// TO BE FINISHED : 				
-				//
+				cout << endl << "FINISH ME !!!!  (apply textures if any, not only material colors)";
+				
+				glEnableClientState(GL_VERTEX_ARRAY);
 
-				// VA : lot of rewrite needed, at both the OBJ & MTL reading part :
-				//      as we need to maintain a set of vertices, per related material
-				cout << endl << "WRITE ME !!!!";
+				glVertexPointer(3, GL_FLOAT, 0, &objVertices[0]); // the COMPLETE list of vertices is used for each draxing iteration below
+
+				for (int m = 0; m < objMats.size(); m++)
+				{
+					mtl::rgb& matKd = objMats[m].Kd;
+					// first assign color using material one (simple approach : we use Kd)
+					glColor3f(matKd.r, matKd.g, matKd.b);
+
+					//
+					// TO BE FINISHED (below) : 	manage texture, use UVs array and UVs indices (per faces)
+					//
+
+					// per construction, for each defined material; a matching vector of faces exist; 
+					// ... so render it with related material
+					vector<obj::Face>& matFaces = objMatFaces[m]; // remember : set of faces with index m is related to material with index m
+					cout << endl << "-set #" << m << " ,contains " << matFaces.size() << " face(s) to draw";
+					for (int f = 0; f < matFaces.size(); f++)
+					{
+						obj::Face& face = matFaces[f];
+
+						cout << endl << "vertex indice(s) to load :" << face.vertexIndices.size() << " >>> ";
+						for (int vi = 0; vi < face.vertexIndices.size(); vi++)
+							cout << face.vertexIndices[vi] << " ";
+
+						if (3 == face.vertexIndices.size())
+						{
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_TRIANGLES, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+						else if (4 == face.vertexIndices.size())
+						{
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_QUADS, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+						else
+						{
+							cout << endl << "Drawing face as a polygon, as described per : " << face.vertexIndices.size() << " vertex indexes";
+							// Using array of vertex indices defining that face(s) set (Note : provided as vector of INT !)
+							glDrawElements(GL_POLYGON, (GLsizei)face.vertexIndices.size(), GL_UNSIGNED_INT, (GLvoid*)&face.vertexIndices[0]);
+						}
+					}
+
+				}
+
+				glDisableClientState(GL_VERTEX_ARRAY);	
 			}
 			
-*/
+//*/
 
 			/*
 			//cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", and vert. indices : " << objVertIndices.size();;
