@@ -8,7 +8,7 @@
 
 //#include "BmpLoader.h"
 
-#include "commonFunctions.h"
+#include "glDrawControl.h"
 
 #include <iostream>
 
@@ -68,8 +68,11 @@ int main(int argc, char *argv[])
 	// 2) use OpenGL to display the OBJ loaded
 ///*
 
-	// Assign to Class controlling the draw & display functions our prepared ObjLoader
-	DrawControl::objLoader = &objLoader;
+	// Assign to Class controlling the draw & display functions 
+	// our prepared ObjLoader data
+	
+	bool addToStorage = DrawControl::storeLoadedObject(objLoader);
+	cout << endl << "- GL Draw Control storage adding result : " << (addToStorage ? "SUCCESS" : "FAILED");
 
 	int WindowName;	
 	
@@ -91,10 +94,6 @@ int main(int argc, char *argv[])
 
 	glutMainLoop();
 
-
-	// removing assigned ObjLoader.
-	DrawControl::objLoader = nullptr;
- 
  //*/
 
 	return 0;
