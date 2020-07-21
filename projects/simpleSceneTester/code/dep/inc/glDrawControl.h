@@ -22,9 +22,10 @@ struct LoadedObject
 	vector<obj::vec3> objVertices;
 	vector<obj::vec3> objNormals; // possibly empty
 	vector<obj::uv> objUvs; // possibly empty
+
 	vector<mtl::Material> objMats; // at least will contain one default material
 	vector<vector<obj::Face>> objMatFaces; // at least will contain one set of loaded faces
-
+	
 	LoadedObject() {} // no init, vectors empty at creation
 };
 
@@ -33,10 +34,13 @@ class DrawControl
 {
 	public:
 
-		//static ObjLoader *objLoader;
-		static vector<LoadedObject> loadedObjects; //initialized in cpp
+		static vector<LoadedObject> loadedObjects; // initialized in cpp
+		static vector<GLuint> glTexturesIDs;     //
 
 		static bool storeLoadedObject(ObjLoader objLoader);
+
+		static void DrawControl::setDefaultsForDrawing();
+		static int prepareTexturesForOpenGL(); // estimate & do any texture binding needed fo GL drawing
 
 		static void Reshape(int width, int height);
 		static void Draw();

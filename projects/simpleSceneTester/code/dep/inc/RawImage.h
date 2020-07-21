@@ -13,7 +13,8 @@ struct RawImage
     int width;
     int height;
     int bytesPerPixel;
-    RawImage() { data.clear();  width = height = bytesPerPixel = 0; }
+    unsigned int uniqueId; // assigned & used for GL drawing (texture binding)
+    RawImage() { data.clear();  width = height = bytesPerPixel = uniqueId = 0; }
 };
 
 

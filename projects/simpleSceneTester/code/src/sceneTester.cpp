@@ -74,6 +74,9 @@ int main(int argc, char *argv[])
 	bool addToStorage = DrawControl::storeLoadedObject(objLoader);
 	cout << endl << "- GL Draw Control storage adding result : " << (addToStorage ? "SUCCESS" : "FAILED");
 
+	// add more loaded ojects into storage if needed....
+
+
 	int WindowName;	
 	
 	glutInit(&argc, argv);
@@ -84,6 +87,14 @@ int main(int argc, char *argv[])
 	
 	//Full Screen switching (option)
 	//glutFullScreen();
+
+	DrawControl::setDefaultsForDrawing(); // defines GL background color, ....
+
+	// HERE, we do a ONE SHOT review of loaded object(s)
+	// notably regarding texture(s) binding (so GL context MUST be created at this point, ....)
+	int preparedTexturesCount = DrawControl::prepareTexturesForOpenGL();
+	cout << endl << "- GL Draw Control has prepared : " << preparedTexturesCount << " texture(s) for OpenGL use";
+
 
 	// assign callbacks functions :
 	glutReshapeFunc(DrawControl::Reshape);

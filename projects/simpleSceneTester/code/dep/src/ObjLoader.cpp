@@ -150,9 +150,6 @@ bool ObjLoader::parseFaceTypeDefinition(string& params)
 
     obj::Face face;
 
-    // a face should keep trace of current active material if any (for use it at drawing step)
-    //face.materialIdx = m_currentMaterialIdx;
-
     // first access case  :
     //    detect if we need to resize the per_material vector of faces
     //    this is the case if no material is provided at all (it will be idx 0, and default one will be set before drawing faces)
@@ -361,45 +358,7 @@ bool ObjLoader::defineCurrentMaterial(string& params)
     return foundEntry;
 }
 
-// REWRITE ME : (to fit a 'per material' faces drawing with opengl and vertices indices array)!
-/*  
-bool ObjLoader::getParsedObjData(vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
-    vector<obj::vec3>& vertNormals, vector<obj::uv>& vertUvs, vector<mtl::Material>& materials)
-{
-
-    cout << endl << "!!!! REWRITE THIS METHOD TO FOLLOW per material faces, ... vectorization !! ";
-
-    // sanity check : some vertices were extracted ???
-    if (m_vertices.empty())
-        return false;
-
-    vertices.clear();
-    vertIndices.clear();
-    vertNormals.clear();
-    vertUvs.clear();
-    // optional Material(s) info clear
-    materials.clear();
-
-    // copy data into provided vectors
-    vertices.insert(vertices.end(), m_vertices.begin(), m_vertices.end());
-    vertNormals.insert(vertNormals.end(), m_normals.begin(), m_normals.end());
-    vertUvs.insert(vertUvs.end(), m_uvs.begin(), m_uvs.end());
-
-    // feed the vertex indices vector
-    for (int i = 0; i < m_objFaces.size(); i++)
-    {
-        obj::Face& currFace = m_objFaces[i];
-
-        vertIndices.insert(vertIndices.end(), currFace.vertexIndices.begin(), currFace.vertexIndices.end());
-    }
-
-    // provide optional Material(s) info defined
-    materials.insert(materials.end(), m_materials.begin(), m_materials.end());
-
-    return true;
-}
-*/
-
+// Note : REWRITEN : (to fit a 'per material' faces drawing with opengl and vertices indices array)!
 bool ObjLoader::getParsedObjData( vector<obj::vec3>& vertices,         // v/vn/vt INDICES will be managed on a per-face basis (in Face struct)
                                   vector<obj::vec3>& vertNormals,     //
                                   vector<obj::uv>& vertUvs,          //

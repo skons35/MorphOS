@@ -46,8 +46,6 @@ namespace obj
             vector<int> uvIndices;
             Face() { } // no init, vectors empty at creation
     };
-
-    //const int NO_MATERIAL_IDX = -1; // no more using this approach
 }
 
 // See : https://en.wikipedia.org/wiki/Wavefront_.obj_file
@@ -84,14 +82,7 @@ class ObjLoader
         
         bool parseObjFile(string fileName);   
 
-        // REWRITE ME : (to fit per material faces draw using openGL )
-        /*
-        bool getParsedObjData( vector<obj::vec3>& vertices, vector<uint8_t>& vertIndices,  // vert. indices are usefull for using glDrawElements()
-                               vector<obj::vec3>& vertNormals,     // possibly empty
-                               vector<obj::uv>& vertUvs,           // possibly empty
-                               vector<mtl::Material>& materials  // possibly empty
-                            );
-        */
+        // REWRITEN: (to fit per material faces draw using openGL )        
         bool getParsedObjData( vector<obj::vec3>& vertices,         // indices will be managed on a per-face basis (in Face struct)
                                vector<obj::vec3>& vertNormals,     //
                                vector<obj::uv>& vertUvs,          //
