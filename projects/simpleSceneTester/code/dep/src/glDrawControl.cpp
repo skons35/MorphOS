@@ -22,6 +22,10 @@ std::vector<GLuint> DrawControl::glTexturesIDs = vector<GLuint>();
 static float rotAngle = 0.0f;
 static float rotDir = 1.0f; // +1 or -1
 
+static double fov = 60.0f; // 45.0f;
+
+// camer initial location :
+static float xPos = 0.0f, yPos = 0.0f, zPos = -6.0f; 
 
 bool DrawControl::storeLoadedObject(ObjLoader objLoader)
 {
@@ -176,10 +180,10 @@ void DrawControl::Reshape(int width, int height)
 	glLoadIdentity();
 	
 	gluPerspective(
-		45,
+		fov, //45,
 		float(width) / float(height),
-		0.1,
-		100
+		0.01, // 0.1
+		300 // 100
 	); 	
 	
 	// set back the matrix to ModelView
@@ -204,7 +208,8 @@ void DrawControl::Draw()
 	//gluLookAt(0, 0, -10, 0, 0, 0, 0, 1, 0);
 
 	//Test : adjust the location of object rendering  ( to control placement distance from camera) :
-	float xPos = 0.0f, yPos = 0.0f, zPos = -6.0f;
+	//float xPos = 0.0f, yPos = 0.0f, zPos = -6.0f;
+	
 	glPushMatrix();
 	glTranslatef(xPos, yPos, zPos);
 
@@ -475,6 +480,18 @@ void DrawControl::mouseCommands(int mButton, int bStatus, int x, int y)
 			break;
 		case GLUT_RIGHT_BUTTON:
 			rotDir = - rotDir; // inverse rotation
+			break;
+		case 3: // wheel mouse forward
+			//cout << endl << "Wheel mouse FWD";
+			//zPos = 2.0f * zPos;
+			zPos += 2.0f;
+			glutPostRedisplay();
+			break;
+		case 4: // wheel mouse backward
+			//cout << endl << "Wheel mouse BWD";
+			//zPos = 0.5f * zPos;
+			zPos -= 2.0f;
+			glutPostRedisplay();
 			break;
 		default: // middle button, ...
 			glutIdleFunc(nullptr); // stop auto rotation & update
