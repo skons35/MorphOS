@@ -24,9 +24,10 @@ bool BmpLoader::parseBmpFile(string fileName)
 
     // BMP HEADER READ & PROCESS 
 
-    char bmpHeader[54];
+    unsigned char bmpHeader[54];
 
-    if(!bmpFile.read(&bmpHeader[0], 54))
+    //if(!bmpFile.read(&bmpHeader[0], 54))    
+    if (bmpFile.read((char *)&bmpHeader[0], 54).fail()) //if (bmpFile.get(&bmpHeader[0], 54, '\r').fail())
     {
         cout << endl << "Failed to read file's HEADER from : " << m_bmpFileName;
         bmpFile.close();
@@ -52,29 +53,29 @@ bool BmpLoader::parseBmpFile(string fileName)
     // !!!! Little Indian used in BMP file ...
 
     //  swap bytes 2/3/4/5:
-    int filesize = bmpHeader[5] << 24 | bmpHeader[4] << 16 | bmpHeader[3] << 8 | bmpHeader[2];
+    unsigned int filesize = bmpHeader[5] << 24 | bmpHeader[4] << 16 | bmpHeader[3] << 8 | bmpHeader[2];
     //cout << endl << "Header : FileSize="<< filesize;
 
     //  swap bytes 10/11/12/13:
-    int dataPos = bmpHeader[13] << 24 | bmpHeader[12] << 16 | bmpHeader[11] << 8 | bmpHeader[10];
+    unsigned int dataPos = bmpHeader[13] << 24 | bmpHeader[12] << 16 | bmpHeader[11] << 8 | bmpHeader[10];
     //cout << endl << "Header : dataStartPos="<< dataPos;
 
     //  swap bytes 18/19/20/21:
-    int width = bmpHeader[21] << 24 | bmpHeader[20] << 16 | bmpHeader[19] << 8 | bmpHeader[18];
+    unsigned int width = bmpHeader[21] << 24 | bmpHeader[20] << 16 | bmpHeader[19] << 8 | bmpHeader[18];
     //cout << endl << "Header : img width="<< width;
 
     //  swap bytes 22/23/24/25:
-    int height = bmpHeader[25] << 24 | bmpHeader[24] << 16 | bmpHeader[23] << 8 | bmpHeader[22];
+    unsigned int height = bmpHeader[25] << 24 | bmpHeader[24] << 16 | bmpHeader[23] << 8 | bmpHeader[22];
     //cout << endl << "Header : img height="<< height;
     
 
     // 2nd part : load img data 
     //  <<<< enhance me : check plane order ARGB, BGRA ????
     //
-    int bytesPerPixel = 0;
+    unsigned int bytesPerPixel = 0;
 
     // need to check if 24bpp or 32bpp (RGB or RGBA)
-    int dataLength = filesize - dataPos;
+    unsigned int dataLength = filesize - dataPos;
     //cout << endl << "Remaining Data Length to read : " << dataLength;
 
     if (0 == (dataLength - width * height * 3))
@@ -97,7 +98,8 @@ bool BmpLoader::parseBmpFile(string fileName)
         bmpFile.seekg(dataPos, bmpFile.beg);
                 
         // read all the img data :
-        if ( !bmpFile.read((char *)&m_RawImage.data[0], dataLength) )
+        //if ( !bmpFile.read((char *)&m_RawImage.data[0], dataLength) )
+        if (bmpFile.read((char*)&m_RawImage.data[0], dataLength).fail())
         {
             cout << endl << "Failed to read all image data from : " << m_bmpFileName;
             bmpFile.close();
