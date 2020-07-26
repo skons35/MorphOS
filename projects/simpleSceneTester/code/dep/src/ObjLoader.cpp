@@ -403,6 +403,22 @@ bool ObjLoader::getParsedObjData( vector<obj::vec3>& vertices,         // v/vn/v
         faces.push_back(clonedMatFaces); 
      }
 
+    // SANITY CHECK : in the particular case where we would acquire MORE materials definition 
+    //                than the ones pratically used for coloring/texturing set of faces, 
+    //                we need to extend the vector of set of faces (with empty set entries) 
+    //                to ensure enough entries compared to the one of materials vector. 
+    //                (the reason is we do drawing later by parsing material vector and peeking
+    //                  related set of faces in parallel using same index id)
+    if (faces.size() < materials.size())
+    {
+        //  The way we parse vectors for drawing faces using right material, then : 
+        //  having more set of face(s) defined than used materials(s) is safe, but not the opposite ;-)
+        //  so : 
+        cout << endl << "Special case detected (more material(s) defined than used on faces)";
+        cout << endl << "Extending set of face(s) entries to match set of Material(s) defined";
+        faces.resize(materials.size());
+    }
+
     return true;
 }
 

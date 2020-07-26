@@ -243,14 +243,14 @@ void DrawControl::Draw()
 			// CASE A
 
 			cout << endl << "CASE A : no material(s), use a common default RED COLOR for all vertices...";
-				
+			
 			glEnableClientState(GL_VERTEX_ARRAY);					
 			glVertexPointer(3, GL_FLOAT, 0, &lo.objVertices[0]);
 			// tempo : simply assign ONE unique color for obj to be drawn :
 			glColor3f(1.0f, 0.0f, 0.0f); // RED
 
 			// we could assume to find only ONE set of face(s), all using that DEFAULT "material"
-			// but just in case parse as if in gneral case (multiple mat, so multiple faces' set
+			// but just in case parse as if in general case (multiple mat, so multiple faces' set
 			//cout << endl << "--Set of faces to draw :" << lo.objMatFaces.size();
 			for (int i = 0; i < lo.objMatFaces.size(); i++)
 			{
@@ -296,7 +296,7 @@ void DrawControl::Draw()
 			glVertexPointer(3, GL_FLOAT, 0, &lo.objVertices[0]); // the COMPLETE list of vertices is used for each draxing iteration below
 
 			for(int m=0; m< lo.objMats.size(); m++)
-			{
+			{			
 				mtl::rgb& matKd = lo.objMats[m].Kd;
 				// first assign color using material one (simple approach : we use Kd)
 				glColor3f(matKd.r, matKd.g, matKd.b);
