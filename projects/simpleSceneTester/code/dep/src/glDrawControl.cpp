@@ -223,6 +223,12 @@ void DrawControl::Draw()
 	{		
 		LoadedObject & lo = loadedObjects[idx];
 				
+		// tempo debug display :
+		cout << endl << "DRAW() : Stored OBJ #"<< idx <<" > vertices : " << lo.objVertices.size()
+						<< ", normals : " << lo.objNormals.size() << ", UVs : " << lo.objUvs.size()
+						<< ", material(s) : " << lo.objMats.size() << ", set(s) of face(s) : " << lo.objMatFaces.size();
+
+
 		// 3 cases : 
 		//   (A)  : just obj file => no provided (material) color(s), just vertices (+ normals possibly) and faces
 		//                           THEN a default material MUST be created & used BELOW
@@ -231,11 +237,6 @@ void DrawControl::Draw()
 		//                            but without UVs information
 		//   (C)  : obj + MTL(s) + text. file(s) ==> provided material as texture(s) file, with UVs,
 		//                                           with vertices (+ normals possibly)
-
-		// tempo debug display :
-		cout << endl << "DRAW() : Stored OBJ #"<< idx <<" > vertices : " << lo.objVertices.size()
-						<< ", normals : " << lo.objNormals.size() << ", UVs : " << lo.objUvs.size()
-						<< ", material(s) : " << lo.objMats.size() << ", set(s) of face(s) : " << lo.objMatFaces.size();
 
 		// process cases amongst 3
 		if (lo.objMats.empty())
@@ -293,7 +294,7 @@ void DrawControl::Draw()
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 				
-			glVertexPointer(3, GL_FLOAT, 0, &lo.objVertices[0]); // the COMPLETE list of vertices is used for each draxing iteration below
+			glVertexPointer(3, GL_FLOAT, 0, &lo.objVertices[0]); // the COMPLETE list of vertices is used for each drawing iteration below
 
 			for(int m=0; m< lo.objMats.size(); m++)
 			{			
@@ -342,11 +343,11 @@ void DrawControl::Draw()
 			cout << endl << "CASE C : material(s) color(s) defined, using texture(s) ...";
 							
 			glEnableClientState(GL_VERTEX_ARRAY);
-
-			glVertexPointer(3, GL_FLOAT, 0, &lo.objVertices[0]); // the COMPLETE list of vertices is used for each draxing iteration below
+			//glVertexPointer(3, GL_FLOAT, 0, &lo.objVertices[0]); // the COMPLETE list of vertices is used for each draxing iteration below
+			glVertexPointer(3, GL_FLOAT, sizeof(obj::vec3), (GLvoid*)&lo.objVertices[0]); // the COMPLETE list of vertices is used for each draxing iteration below
 
 			for (int m = 0; m < lo.objMats.size(); m++)
-			{
+			{				
 				mtl::Material& objMat = lo.objMats[m];
 				
 				// first assign color using material one (simple approach : we use Kd)
@@ -363,7 +364,8 @@ void DrawControl::Draw()
 					glBindTexture(GL_TEXTURE_2D, (GLuint)ri.uniqueId);					
 
 					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-					glTexCoordPointer(2, GL_FLOAT, 0, &lo.objUvs[0]); // again, the COMPLETE list of UVs is used for each draxing iteration below
+					//glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*) &lo.objUvs[0]); // again, the COMPLETE list of UVs is used for each draxing iteration below
+					glTexCoordPointer(2, GL_FLOAT, sizeof(obj::uv), (GLvoid*)&lo.objUvs[0]); // again, the COMPLETE list of UVs is used for each draxing iteration below
 
 				}
 			
@@ -402,47 +404,26 @@ void DrawControl::Draw()
 					glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			}			
 
-			glDisableClientState(GL_VERTEX_ARRAY);	
-		}
-
-		/* // prev. simple test code :
-		{
-			//cout << endl << "Provided OBJ vertices : " << objVertices.size() << ", and vert. indices : " << objVertIndices.size();;
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			//glEnableClientState(GL_COLOR_ARRAY);
-			// 
-			glVertexPointer(3, GL_FLOAT, 0, &objVertices[0]);
-			//glColorPointer(3, GL_FLOAT, 0, vertCols);
-
-			// tempo : assign ONE unique color for obj to be drawn :
-			glColor3f(1.0f, 0.0f, 0.0f); // RED
-			
-			//glDrawArrays(GL_TRIANGLES, 0, (GLsizei) 2 * 3); // objVertices.size()); // draw 1st triangle
-
-			// Using array of vertex indices
-			glDrawElements(GL_TRIANGLES, (GLsizei)objVertIndices.size(), GL_UNSIGNED_BYTE, &objVertIndices[0]);
-
-			//glDisableClientState(GL_COLOR_ARRAY);
 			glDisableClientState(GL_VERTEX_ARRAY);
 		}
-		*/		
+		
 	}
 	
 
 	/*
-	glEnableClientState( GL_VERTEX_ARRAY);
-	glEnableClientState( GL_COLOR_ARRAY);
-	// 1st triangle
-	glVertexPointer( 3, GL_FLOAT, 0, vertPosTri_1);
-	glColorPointer( 3, GL_FLOAT, 0, vertColTri_1);
-	glDrawArrays( GL_TRIANGLES, 0, 3); // draw 1st triangle
-	// 2nd triangle
-	glVertexPointer( 3, GL_FLOAT, 0, vertPosTri_2);
-	glColorPointer( 3, GL_FLOAT, 0, vertColTri_2);
-	glDrawArrays( GL_TRIANGLES, 0, 3); // draw 2nd triangle	
-	glDisableClientState( GL_COLOR_ARRAY);
-	glDisableClientState( GL_VERTEX_ARRAY);
+		// prev. simple test code :
+		glEnableClientState( GL_VERTEX_ARRAY);
+		glEnableClientState( GL_COLOR_ARRAY);
+		// 1st triangle
+		glVertexPointer( 3, GL_FLOAT, 0, vertPosTri_1);
+		glColorPointer( 3, GL_FLOAT, 0, vertColTri_1);
+		glDrawArrays( GL_TRIANGLES, 0, 3); // draw 1st triangle
+		// 2nd triangle
+		glVertexPointer( 3, GL_FLOAT, 0, vertPosTri_2);
+		glColorPointer( 3, GL_FLOAT, 0, vertColTri_2);
+		glDrawArrays( GL_TRIANGLES, 0, 3); // draw 2nd triangle	
+		glDisableClientState( GL_COLOR_ARRAY);
+		glDisableClientState( GL_VERTEX_ARRAY);
 	*/
 
 	glPopMatrix();

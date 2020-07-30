@@ -23,9 +23,9 @@ constexpr const char* DEF_DATA_PATH = "..\\Data\\";
 
 int main(int argc, char *argv[])
 {
-	cout << "SceneTester started." << endl;
+	cout << endl << "SceneTester started.";
 
-///*
+//*/
 	// 1) OBJ load & infos display
     cout << "testing load OBJ file..." << endl;
 	string fullPathFileName;
