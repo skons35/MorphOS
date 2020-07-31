@@ -68,11 +68,18 @@ cmake-gui ..
 It can be launched using samples scripts in  **tests_scripts** folder.
 I also provide the sample data (OBJ files and texture in **data** folder).
 User may trigger object slow rotation by using mouse buttons (Left is starting rotation,
-Right is inverting rotation, middle is stopping the auto-rotation.)
+Right is inverting rotation, middle is stopping the auto-rotation.) or move forward, backward 
+from the object using mouse scrolling button.
 
 Some dedicated BMP code load test added
 Some dedicated MTL code load test added
 
 *Note 1:*
 Only uncompressed BMP texture file(s) are managed at this time (more to be added later).
-Currently the texture(s) are loaded but not displayed. This is the next step (to come).
+
+*Note 2:*
+Textured objects are correctly textured/rendered ONLY if NO vertex are shared amongst defined faces, 
+and each face must be a triangle (not a quad or polygon). This limitation comes from the use of GlDrawElement() 
+with vertices indices arrays combined to texture array use. This limitation will be removed later, for the moment 
+loaded objects must follow that quite restrictive limitation (but purely color based objects have not such limitation and 
+are correclty rendered).

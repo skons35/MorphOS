@@ -40,9 +40,7 @@ int main(int argc, char *argv[])
 	{
 		cout << endl << "NO File provide on cmd line. Will use a default one...";
 		std::string dataPath = DEF_DATA_PATH;
-		std::string objFileName = "VA_textured_faces_with_ananas.obj";
-		//std::string objFileName = "VA_colored_faces_with_mat.obj";
-		//std::string objFileName = "VA_colored_faces.obj";
+		std::string objFileName = "cube\\cube.obj";		
 
 		fullPathFileName = dataPath + objFileName;
 	}	
