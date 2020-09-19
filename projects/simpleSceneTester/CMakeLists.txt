@@ -3,10 +3,9 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-
-FIND_PACKAGE(GLUT REQUIRED)  # FindGLUT.cmake is going to look for NAMES : glut glut32 freeglut
-
-include_directories( ${GLUT_INCLUDE_DIR} )
+#Commenting Windows specific :
+#FIND_PACKAGE(GLUT REQUIRED)  # FindGLUT.cmake is going to look for NAMES : glut glut32 freeglut
+#include_directories( ${GLUT_INCLUDE_DIR} )
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/simpleSceneTester/code/dep/inc)
 
