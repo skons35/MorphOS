@@ -39,7 +39,7 @@ class DrawControl
 
 		static bool storeLoadedObject(ObjLoader objLoader);
 
-		static void DrawControl::setDefaultsForDrawing();
+		static void setDefaultsForDrawing();
 		static int prepareTexturesForOpenGL(); // estimate & do any texture binding needed fo GL drawing
 
 		static void Reshape(int width, int height);

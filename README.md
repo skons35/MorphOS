@@ -12,7 +12,8 @@ Starting with usual Windows/Linux platforms, i will focus quickly on [MorphOS](h
   Also, a **CMakeLists.txt** is provided to easily generate then project, using [CMake](https://cmake.org/)
 
 - On MorphOS platform (typically PowerPC architecture, as my PowerBook  
-  from ~2004), a **Makefile** will by provided for the project.
+  from ~2004), CMake is available, so again a  **CMakeLists.txt** is provided, 
+  to generate a related  **Makefile** .
 
 ## Requirements
 - On windows/linux, i suggest to install [VCPKG](https://github.com/microsoft/vcpkg)  
@@ -36,7 +37,7 @@ git clone https://github.com/skons35/MorphOS.git
 ```
 cd projects
 ```
-* (Windows/Linux) : create a **build** folder (where to generate project to be compiled) and go into it:
+* (Windows/Linux/Morphos) : create a **build** folder (where to generate project to be compiled) and go into it:
 ```
 mkdir build
 cd build
@@ -73,6 +74,32 @@ from the object using mouse scrolling button.
 
 Some dedicated BMP code load test added
 Some dedicated MTL code load test added
+
+
+
+* (Morphos) : Generate the project simply as follow (from build dir):
+```
+cmake ..
+
+```
+the **makefile** along others files will be generated (includes multiple targets, for testing MTL, BMP loading individually)
+
+
+* Compile the wanted target(s) using **make** <target> command.
+For instance, use one of the below validated target :
+
+```
+make mtlLoadTester
+```
+or :
+```
+make bmpLoadTester
+```
+
+some samples are provided, with calling scripts examples, in tests_scripts folder
+
+
+* general notes :
 
 *Note 1:*
 Only uncompressed BMP texture file(s) are managed at this time (more to be added later).
