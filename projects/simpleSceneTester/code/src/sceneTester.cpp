@@ -1,4 +1,4 @@
-﻿// SceneTester.cpp : Defines the entry point for the application.
+// SceneTester.cpp : Defines the entry point for the application.
 //
 
 
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 {
 	cout << endl << "SceneTester started.";
 
-//*/
+
 	// 1) OBJ load & infos display
     cout << "testing load OBJ file..." << endl;
 	string fullPathFileName;
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	objLoader.printDetails(false); // true for full details option
 
 	// 2) use OpenGL to display the OBJ loaded
-///*
+
 
 	// Assign to Class controlling the draw & display functions 
 	// our prepared ObjLoader data
@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 
 	// add more loaded ojects into storage if needed....
 
+	cout << endl << "Creating GL windows..." <<endl;
 
 	int WindowName;	
 	
@@ -81,6 +82,7 @@ int main(int argc, char *argv[])
 
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(640, 480);  //Optional
+	//glutInitWindowPosition(0, 0);
 	WindowName = glutCreateWindow("SceneTester");
 	
 	//Full Screen switching (option)
@@ -103,7 +105,7 @@ int main(int argc, char *argv[])
 
 	glutMainLoop();
 
- //*/
 
 	return 0;
 }
+

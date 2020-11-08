@@ -1,11 +1,24 @@
-﻿# CMakeList.txt : CMake project for simpleSceneTester, include source and define
+# CMakeList.txt : CMake project for simpleSceneTester, include source and define
 # project specific logic here.
 #
 cmake_minimum_required (VERSION 3.8)
 
-#Commenting Windows specific :
-#FIND_PACKAGE(GLUT REQUIRED)  # FindGLUT.cmake is going to look for NAMES : glut glut32 freeglut
-#include_directories( ${GLUT_INCLUDE_DIR} )
+#Adding display of platform infos :
+message(STATUS "Platform :"  ${CMAKE_HOST_SYSTEM_NAME})     # for instance : MorphOS, ...
+#message(STATUS "System   :"  ${CMAKE_SYSTEM})              # for instance : MorphOS-3.13
+
+# add Linux/Windows specific FreeGlut specific lookup
+if(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
+	# add Windows & Linux lookup for Freeglut package :
+	FIND_PACKAGE(GLUT REQUIRED)  # FindGLUT.cmake is going to look for NAMES : glut glut32 freeglut
+	include_directories( ${GLUT_INCLUDE_DIR} )
+	set(DEP_LIBRARIES ${GLUT_LIBRARIES})
+else(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
+	# for Morphos, Tweaking gl glut related dependencies
+	#target_compile_options(-noixemul)
+endif(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
+
+#message(STATUS "DEP_LIBRARIES : "  ${DEP_LIBRARIES})  
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/simpleSceneTester/code/dep/inc)
 
@@ -14,7 +27,13 @@ ADD_LIBRARY(sceneTestsLib ${sources})
 
 # main prog : OBJ loader; including MTL and BMP loading if present
 ADD_EXECUTABLE(sceneTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/sceneTester.cpp)
-target_link_libraries(sceneTester sceneTestsLib  ${GLUT_LIBRARIES})
+
+if(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
+	target_link_libraries(sceneTester sceneTestsLib ${GLUT_LIBRARIES})
+else(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
+	SET_TARGET_PROPERTIES(sceneTester PROPERTIES LINK_FLAGS -noixemul)
+	target_link_libraries(sceneTester sceneTestsLib m Gl glut)
+endif(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
 
 # Provides also some extra tests : dedicated code for file load of MTL and BMP
 ADD_EXECUTABLE(mtlLoadTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/mtlLoadTester.cpp)
