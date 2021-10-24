@@ -12,12 +12,8 @@ Starting with usual Windows/Linux platforms, i've added also [MorphOS](https://f
   Also, a **CMakeLists.txt** is provided to easily generate then project, using [CMake](https://cmake.org/)
 
 - On MorphOS platform (typically PowerPC architecture, as my PowerBook  
-<<<<<<< Updated upstream
   from ~2004), CMake is available, so again a  **CMakeLists.txt** is provided, 
   to generate a related  **Makefile** .
-=======
-  from ~2004), a **Makefile** will by also generated from that  **CMakeLists.txt** .
->>>>>>> Stashed changes
 
 ## Requirements
 - On windows/linux, i suggest to install [VCPKG](https://github.com/microsoft/vcpkg)  
