@@ -1,19 +1,23 @@
 # MorphOS
 Find in *projects* some applications more oriented to MorphOS portability and tests.
-One application at this time, to be completed.
+One application at this time.
 
 
 ## Introduction
 The aim of the first *simpleSceneTester* project is testing set up and rendering of simple 3D scene using **OpenGL** / **GLUT** combination, keeping compatibility for most platforms.
 
-Starting with usual Windows/Linux platforms, i will focus quickly on [MorphOS](https://fr.wikipedia.org/wiki/MorphOS) platform.
+Starting with usual Windows/Linux platforms, i've added also [MorphOS](https://fr.wikipedia.org/wiki/MorphOS) platform.
 
 - On Windows/Linux platform, freeGlut & OpenGL libraries would be needed.
   Also, a **CMakeLists.txt** is provided to easily generate then project, using [CMake](https://cmake.org/)
 
 - On MorphOS platform (typically PowerPC architecture, as my PowerBook  
+<<<<<<< Updated upstream
   from ~2004), CMake is available, so again a  **CMakeLists.txt** is provided, 
   to generate a related  **Makefile** .
+=======
+  from ~2004), a **Makefile** will by also generated from that  **CMakeLists.txt** .
+>>>>>>> Stashed changes
 
 ## Requirements
 - On windows/linux, i suggest to install [VCPKG](https://github.com/microsoft/vcpkg)  
@@ -24,7 +28,7 @@ Starting with usual Windows/Linux platforms, i will focus quickly on [MorphOS](h
   ```
 
 - On MorphOS, a *TinyGL* library is providing some of the OpenGL/GlUT   
-  functionnalities, possibly with lots of limitation or differences, i will try to update the code as needed. Also using the *make* build tools with provided *Makefile* will be the usual building approach.
+  functionnalities, possibly with lots of limitation or differences, i will try to update the code as needed. Also using the *make* build tools on generated *Makefile* will be the usual building approach.
   
 ## Starting steps
 * clone this repository
@@ -37,6 +41,7 @@ git clone https://github.com/skons35/MorphOS.git
 ```
 cd projects
 ```
+
 * (Windows/Linux/Morphos) : create a **build** folder (where to generate project to be compiled) and go into it:
 ```
 mkdir build
@@ -48,7 +53,6 @@ so in the following call to cmake project generator, you'll need to provide vali
 cmake .. -DCMAKE_TOOLCHAIN_FILE=<PATH_TO_VCPKG_INSTALL_DIR>\scripts\buildsystems\vcpkg.cmake 
 
 ```
-
 * (Windows/Linux) : ALTERNATIVE TO ABOVE STEP : you could also interactively adjust the settings or default values 
 presented by CMakeLists.txt, and to do that, you may replace the command from previous step 
 by the more user friendly one (allowing UI interaction) :
@@ -59,8 +63,14 @@ cmake-gui ..
 	- Finally click on **Generate** to generate the project files with defined settings. 
 	  The message *Generating done* should be displayed.
 	- You may quit the cmake-gui interface.
+	
+* (MorphOS) : Generate the project letting CMake finding dependencies
+```
+cmake ..
 
-* Compile the generated project (for instance, if Visual Studio was the compiling IDE defined,
+```
+
+* Compile the generated project (for instance, on Windows, if Visual Studio is the compiling IDE defined,
  you should find a simpleSceneTester.sln_ file, that you can open with that IDE, and then compile the project.
 * launch / test the generated binary.
 
@@ -70,7 +80,7 @@ It can be launched using samples scripts in  **tests_scripts** folder.
 I also provide the sample data (OBJ files and texture in **data** folder).
 User may trigger object slow rotation by using mouse buttons (Left is starting rotation,
 Right is inverting rotation, middle is stopping the auto-rotation.) or move forward, backward 
-from the object using mouse scrolling button.
+from the object using mouse scrolling button (NOT on MorphOS, as no scroll wheel managed here).
 
 Some dedicated BMP code load test added
 Some dedicated MTL code load test added
