@@ -60,29 +60,6 @@ cmake-gui ..
 	  The message *Generating done* should be displayed.
 	- You may quit the cmake-gui interface.
 	
-* (MorphOS) : Generate the project letting CMake finding dependencies
-```
-cmake ..
-
-```
-
-* Compile the generated project (for instance, on Windows, if Visual Studio is the compiling IDE defined,
- you should find a simpleSceneTester.sln_ file, that you can open with that IDE, and then compile the project.
-* launch / test the generated binary.
-
-**SimpleSceneTester** is a very simple OpenGL program, that will aims to load and display
- an OBJ file ( a default one, or a specific one if filename is provided as command line parameter)
-It can be launched using samples scripts in  **tests_scripts** folder.
-I also provide the sample data (OBJ files and texture in **data** folder).
-User may trigger object slow rotation by using mouse buttons (Left is starting rotation,
-Right is inverting rotation, middle is stopping the auto-rotation.) or move forward, backward 
-from the object using mouse scrolling button (NOT on MorphOS, as no scroll wheel managed here).
-
-Some dedicated BMP code load test added
-Some dedicated MTL code load test added
-
-
-
 * (Morphos) : Generate the project simply as follow (from build dir):
 ```
 cmake ..
@@ -102,7 +79,25 @@ or :
 make bmpLoadTester
 ```
 
+
 some samples are provided, with calling scripts examples, in tests_scripts folder
+* Compile the generated project (for instance, on Windows, if Visual Studio is the compiling IDE defined,
+ you should find a simpleSceneTester.sln_ file, that you can open with that IDE, and then compile the project.
+* launch / test the generated binary.
+
+
+
+**SimpleSceneTester** is a very simple OpenGL program, that will aims to load and display
+ an OBJ file ( a default one, or a specific one if filename is provided as command line parameter)
+It can be launched using samples scripts in  **tests_scripts** folder.
+I also provide the sample data (OBJ files and texture in **data** folder).
+User may trigger object slow rotation by using mouse buttons (Left is starting rotation,
+Right is inverting rotation, middle is stopping the auto-rotation.) or move forward, backward 
+from the object using mouse scrolling button (NOT on MorphOS, as no scroll wheel managed here).
+
+Some dedicated BMP code load test added
+Some dedicated MTL code load test added
+
 
 
 * general notes :
