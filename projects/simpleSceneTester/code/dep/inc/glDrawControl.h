@@ -11,7 +11,8 @@
 //#include <gl/freeglut_ext.h>
 
 //#include <gl/gl.h>
-#include <gl/glut.h>
+//#include <gl/glut.h>
+#include <GL/glut.h> // !! case sensitive (GL, not gl)
 
 
 //bool pseudoFunction();

@@ -4,21 +4,27 @@
 cmake_minimum_required (VERSION 3.8)
 
 #Adding display of platform infos :
-message(STATUS "Platform :"  ${CMAKE_HOST_SYSTEM_NAME})     # for instance : MorphOS, ...
-#message(STATUS "System   :"  ${CMAKE_SYSTEM})              # for instance : MorphOS-3.13
+message(STATUS "Platform :"  ${CMAKE_HOST_SYSTEM_NAME})     # for instance : MorphOS, Linux, ...
+#message(STATUS "System   :"  ${CMAKE_SYSTEM})              # for instance : MorphOS-3.13 , ...
 
 # add Linux/Windows specific FreeGlut specific lookup
 if(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
 	# add Windows & Linux lookup for Freeglut package :
 	FIND_PACKAGE(GLUT REQUIRED)  # FindGLUT.cmake is going to look for NAMES : glut glut32 freeglut
 	include_directories( ${GLUT_INCLUDE_DIR} )
-	set(DEP_LIBRARIES ${GLUT_LIBRARIES})
 else(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
 	# for Morphos, Tweaking gl glut related dependencies
 	#target_compile_options(-noixemul)
 endif(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
 
-#message(STATUS "DEP_LIBRARIES : "  ${DEP_LIBRARIES})  
+set(EXTRA_LIBRARIES "")
+# extra libs required for Linux
+if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+	set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} "GL" "GLU") #${DEP_LIBRARIES} GL GLU)
+endif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+
+#message(STATUS "GLUT_LIBRARIES : "  ${GLUT_LIBRARIES}) 
+#message(STATUS "EXTRA_LIBRARIES : "  ${EXTRA_LIBRARIES})  
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/simpleSceneTester/code/dep/inc)
 
@@ -29,7 +35,7 @@ ADD_LIBRARY(sceneTestsLib ${sources})
 ADD_EXECUTABLE(sceneTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/sceneTester.cpp)
 
 if(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
-	target_link_libraries(sceneTester sceneTestsLib ${GLUT_LIBRARIES})
+	target_link_libraries(sceneTester sceneTestsLib ${GLUT_LIBRARIES} ${EXTRA_LIBRARIES})
 else(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
 	SET_TARGET_PROPERTIES(sceneTester PROPERTIES LINK_FLAGS -noixemul)
 	target_link_libraries(sceneTester sceneTestsLib m Gl glut)
@@ -37,10 +43,10 @@ endif(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "MorphOS")
 
 # Provides also some extra tests : dedicated code for file load of MTL and BMP
 ADD_EXECUTABLE(mtlLoadTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/mtlLoadTester.cpp)
-target_link_libraries(mtlLoadTester sceneTestsLib) #  ${GLUT_LIBRARIES})
+target_link_libraries(mtlLoadTester sceneTestsLib) 
 
 ADD_EXECUTABLE(bmpLoadTester ${CMAKE_SOURCE_DIR}/simpleSceneTester/code/src/bmpLoadTester.cpp)
-target_link_libraries(bmpLoadTester sceneTestsLib) #  ${GLUT_LIBRARIES})
+target_link_libraries(bmpLoadTester sceneTestsLib) 
 
 # install part related :
 
